@@ -24,7 +24,7 @@ var	theScale = 1.0;
 var theInit = true;
 
 
-var lightPosition = vec4(0.0, 0.0, 2.0, 0.0 );
+var lightPosition = vec4(0.0, 0.0, 0.0, 1.0 );
 var ka = 0.5;
 var kd = 0.5;
 var ks = 0.5;
@@ -224,10 +224,10 @@ var theSphereProgram;
 var theSpherePoints = [];
 
 var theSphereVertices = [
-                         vec4( 0.0,  1.0,  0.0, 1.0 ),
+                         vec4( 0.0,  0.0,  0.0, 1.0 ),
                          vec4( 1.0,  0.0,  0.0, 1.0 ),
                          vec4( 2.0,  0.0,  0.0, 1.0 ),
-                         vec4( 3.0,  1.0,  0.0, 1.0 )
+                         vec4( 3.0,  0.0,  0.0, 1.0 )
                    ];
 
 function sphereQuad(a, b, c, d) 
@@ -252,84 +252,15 @@ function initSphere()
     theSphereVBOPoints = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, theSphereVBOPoints);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(theSpherePoints), gl.STATIC_DRAW);
-    
-    var N = 256;
-    var data = new Uint8Array(N * N * 4);
-    var count = 0;
-    for(var i = 0; i < N; i++){
-    	for(var j = 0; j < N; j++){
-    		data[count++] = 255;
-    		data[count++] = 0;
-    		data[count++] = 0;
-    		if(i >= N/4 && j >= N/4 && i < 3*N/4 && j < 3*N/4){
-    			data[count++] = 255;
-    		} else {
-    			data[count++] = 0;
-    		}
-        }
-    }
-    
-    var normalst = new Array()
-    for (var i=0; i<N; i++){
-    	normalst[i] = new Array();
-    }
-    for (var i=0; i<N; i++){
-    	for ( var j = 0; j < N; j++){
-    		normalst[i][j] = new Array();
-    	}
-    }
-    for (var i=0; i<N; i++){
-    	for ( var j = 0; j < N; j++) {
-    		normalst[i][j][0] = data[i][j]-data[i+1][j];
-    		normalst[i][j][1] = data[i][j]-data[i][j+1];
-    		normalst[i][j][2] = 1;
-    	}
-    }
-    
-    var normals = new Uint8Array(3*N*N);
-
-    for ( var i = 0; i < N; i++ ) 
-        for ( var j = 0; j < N; j++ ) 
-           for(var k =0; k<3; k++) 
-                normals[3*N*i+3*j+k] = 255*normalst[i][j][k];
-        
-	
-	var cubeMap = gl.createTexture();
-
-    gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeMap);
-    /*
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    */
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGB, 256, 256, 0, gl.RGB, gl.UNSIGNED_BYTE, normals);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGB, 256, 256, 0, gl.RGB, gl.UNSIGNED_BYTE, normals);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGB, 256, 256, 0, gl.RGB, gl.UNSIGNED_BYTE, normals);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGB, 256, 256, 0, gl.RGB, gl.UNSIGNED_BYTE, normals);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGB, 256, 256, 0, gl.RGB, gl.UNSIGNED_BYTE, normals);
-    gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGB, 256, 256, 0, gl.RGB, gl.UNSIGNED_BYTE, normals);
-    
-    gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_CUBE_MAP,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-    
-    gl.activeTexture( gl.TEXTURE0 );
-    gl.uniform1i(gl.getUniformLocation(theSphereProgram, "texMap"),0);
-	
 }
 
-function drawSphere(p, mv, inverseMV) 
+function drawSphere(p, mv, center, radius) 
 {
     gl.useProgram(theSphereProgram);
 	
 	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "projectionMatrix"),false, flatten(p));
 	 
 	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "modelViewMatrix"),false, flatten(mv));
-	 
-	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "inveseMVMatrix"),false, flatten(inverseMV));
 	
     gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), ka);
 	
@@ -341,9 +272,8 @@ function drawSphere(p, mv, inverseMV)
     
 	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "shininess"), shininess );
 	
-	var center = vec4(0.0, 0.5, 0.0, 1.0);
 	gl.uniform4fv( gl.getUniformLocation(theSphereProgram, "center"), flatten(center));
-	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "scale"), theScale );
+	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "scale"), theScale*radius );
 	
     // Associate out shader variables with our data buffer
     var vPosition = gl.getAttribLocation(theSphereProgram, "vPosition");
@@ -372,7 +302,7 @@ window.onload = function init()
 	
     // Configure WebGL
     gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor(0.95, 0.95, 0.95, 1.0 );	
+    gl.clearColor(0.0, 0.0, 0.0, 1.0 );	
 	theAspect = canvas.width * 1.0 / canvas.height;
 	
 	initCube();
@@ -497,7 +427,7 @@ function inverseMatrix(matrix) {
 	  var det = m[0]*r[0] + m[1]*r[4] + m[2]*r[8] + m[3]*r[12];
 	  for (var i = 0; i < 16; i++) r[i] /= det;
 	  return mat4(result);
-	};
+};
 
 
 // ============================================================================
@@ -519,18 +449,19 @@ function render()
 	mv = mult(mv, s);
 	mv = mult(mv, r);
 	
-	t = translate(0.0, 0.0, 5.0);
-	s = scale(1.0/theScale, 1.0/theScale, 1.0/theScale);
-	r = buildRotationMatrix(invq(theCurtQuat));
-	var inverseMV = mat4();
-	inverseMV = mult(inverseMV, t);
-	inverseMV = mult(inverseMV, s);
-	inverseMV = mult(inverseMV, r);
-	
-	//console.log(inverseMV);
-	//inverseMV = inverseMatrix(mv);
-	//console.log(inverseMV);
-	
 	drawCube(p, mv);
-	drawSphere(p, mv, inverseMV);
+	drawPlanets(p, mv);
+}
+
+function drawPlanets(p, mv)
+{
+
+	var center = vec4(0.0, 0.0, 19.35, 1.0);
+	var radius = 0.383;	// 		Mercury / Earth
+	drawSphere(p, mv, center, radius);
+	
+	
+	center = vec4(0.0, 0.0, 50.0, 1.0);
+	radius = 1.0;	// 		Earth / Earth
+	drawSphere(p, mv, center, radius);
 }
