@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+<script id="cube-vertex-shader" type="x-shader/x-vertex">
+attribute vec4 vPosition;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+void
+main()
+{    
+     gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+}
+</script>
+
+<script id="cube-fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
+void
+main()
+{
+	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+}
+</script>
+
+
+<script id="sphere-vertex-shader" type="x-shader/x-vertex">
+attribute vec4 vPosition;
+
+varying vec3 fPosition;
+varying vec3 fCenter;
+varying float radius;
+varying vec3 L, E;
+
+uniform vec4 lightPosition;
+
+
+precision mediump float;
+uniform vec4 center;
+uniform float scale;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+void
+main()
+{
+	vec3 pPrime = (modelViewMatrix * center).xyz;			// point of center after mv transformation
+	
+	vec3 v = vec3(0.0, 0.0, 0.0) - pPrime;					// vector from center to eye
+	
+	vec3 vPrime = vec3(-v.y, v.x, 0.0);						// vector orthagonal to v
+	if(vPrime == vec3(0.0, 0.0, 0.0))	vPrime = vec3(0.0, v.z, -v.y);
+		if(vPrime == vec3(0.0, 0.0, 0.0))	vPrime = vec3(v.z, 0.0, -v.x);
+	
+	if(vPosition.x == 1.0){
+		
+		vPrime = cross(v, vPrime);							// orthagonal to v and coplanar to previous vPrime
+		
+	} else if (vPosition.x == 2.0){
+		
+		vPrime = cross(v, vPrime);
+		vPrime = cross(v, vPrime);							// orthagonal to v and coplanar to previous vPrimes
+		
+	} else if (vPosition.x == 3.0){
+		
+		vPrime = cross(v, vPrime);
+		vPrime = cross(v, vPrime);
+		vPrime = cross(v, vPrime);							// orthagonal to v and coplanar to previous vPrimes
+		
+	}
+
+	vec3 t = pPrime + normalize(vPrime)*scale*sqrt(2.0);// vertex position of the square
+	
+	vec4 tPrime = projectionMatrix * vec4(t, 1.0);			// vertex position with the projection applied
+
+    gl_Position = tPrime;
+	
+	fPosition = t;											// vertex position without projection
+	fCenter = pPrime;										// center position without projection
+    
+	E = normalize( - (tPrime).xyz);							// vertex from the position to the eye
+    L = normalize((projectionMatrix * modelViewMatrix * lightPosition) - tPrime).xyz;	// vetex position of the light
+}
+</script>
+
+<script id="sphere-fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
+varying vec3 fPosition;
+varying vec3 fCenter;
+varying vec3 L, E;
+
+uniform float scale;
+uniform float ka;
+uniform float kd;
+uniform float ks;
+uniform float shininess;
+uniform samplerCube texMap;
+uniform mat4 modelViewMatrix;
+uniform mat4 inveseMVMatrix;
+uniform mat4 projectionMatrix;
+
+void
+main()
+{
+	vec4 fColor = vec4(1.0, 1.0, 1.0, 1.0);
+
+	float radius = scale;								// circle radius
+	
+    vec3 dif = fPosition - fCenter;
+	float distance = length(dif);							// distance from the center of the circle
+	
+    if (distance > radius) {
+		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);			// point is outside of the circle
+        return;
+	}
+
+    float x = fPosition.x - fCenter.x;
+    float y = fPosition.y - fCenter.y;
+    float z = - sqrt(radius*radius - x * x - y * y);
+    
+    vec3 norm = normalize(vec3(x, y, z));					// normal vector of the circle
+
+	vec3 LL = normalize(L);
+	vec3 EE = normalize(E);
+    
+    vec3 H = normalize( LL + EE );
+    float ambient = ka;
+
+    float diffuse = kd * max( dot(LL, norm), 0.0 );
+    float specular = ks * pow( max(dot(norm, H), 0.0), shininess );
+    
+    if( dot(LL, norm) < 0.0 ) specular = 0.0;
+
+    fColor = fColor * (ambient + diffuse) + vec4(1.0) * specular;
+    fColor.a = 1.0;
+    
+    gl_FragColor = fColor;
+	
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="cube_ball.js"></script>
+</head>
+
+<body>
+<canvas id="gl-canvas" width="1024" height="1024">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+</body>
+</html>

@@ -23,10 +23,6 @@ var	theCurtQuat = [1, 0, 0, 0];
 var	theScale = 1.0;
 var theInit = true;
 
-var time = 0.0;
-
-var timeDelta = 1e-8;
-
 
 var lightPosition = vec4(0.0, 0.0, 0.0, 1.0 );
 var ka = 0.5;
@@ -484,9 +480,6 @@ function render()
 	mv = mult(mv, t);
 	mv = mult(mv, s);
 	mv = mult(mv, r);
-	
-	// time
-	time += timeDelta;
 	
 	// drawn for reference
 	var cubeScale = scale(10, 10, 10);
