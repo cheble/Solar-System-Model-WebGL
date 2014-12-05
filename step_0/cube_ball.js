@@ -30,6 +30,34 @@ var kd = 0.5;
 var ks = 0.5;
 var shininess = 100.0;
 
+// PLANETS (original units in km)
+var RADIUS_SUN = 696000;
+var RADIUS_MERCURY = 2440;
+var RADIUS_VENUS = 6052;
+var RADIUS_EARTH = 6378;
+var RADIUS_MARS = 1738;
+var RADIUS_JUPITER = 71492;
+var RADIUS_SATURN = 60268;
+var RADIUS_URANUS = 25559;
+var RADIUS_NEPTUNE = 24764;
+var RADIUS_PLUTO = 1195;
+
+var DIST_MERCURY= 57900000;
+var DIST_VENUS 	= 108200000;
+var DIST_EARTH 	= 149600000;
+var DIST_MARS 	= 227900000;
+var DIST_JUPITER= 778600000;
+var DIST_SATURN = 1433500000;
+var DIST_URANUS = 2872500000;
+var DIST_NEPTUNE= 4495100000;
+var DIST_PLUTO 	= 5870000000;
+
+var SUN_SCALE = 5e-6;
+var PLANET_SCALE = 1e-4;
+var DIST_SCALE = 1e-7;
+
+// END PLANETS
+
 // Rotation related functions
 function trackball_ptov(x, y,  v)
 {
@@ -254,7 +282,7 @@ function initSphere()
     gl.bufferData(gl.ARRAY_BUFFER, flatten(theSpherePoints), gl.STATIC_DRAW);
 }
 
-function drawSphere(p, mv, center, radius) 
+function drawSphere(p, mv, center, radius, luminous) 
 {
     gl.useProgram(theSphereProgram);
 	
@@ -262,7 +290,11 @@ function drawSphere(p, mv, center, radius)
 	 
 	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "modelViewMatrix"),false, flatten(mv));
 	
-    gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), ka);
+	if(luminous){
+		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), 0.9);
+	} else {
+		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), ka);
+	}
 	
     gl.uniform1f( gl.getUniformLocation(theSphereProgram, "kd"), kd);
     
@@ -435,13 +467,13 @@ function inverseMatrix(matrix) {
 // ============================================================================
 function render() 
 {  
-    gl.clear( gl.COLOR_BUFFER_BIT );
+	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 	
 	// projection matrix
     var  p = perspective( theFovy, theAspect, theZNear, theZFar );
 	
     // modelview matrix
-	var t = translate(0, 0, -5.0);
+	var t = translate(0, 0, -256.0);
 	var s = scale(theScale, theScale, theScale);
 	var r = buildRotationMatrix(theCurtQuat);
 	var mv = mat4();
@@ -449,19 +481,92 @@ function render()
 	mv = mult(mv, s);
 	mv = mult(mv, r);
 	
-	drawCube(p, mv);
+	// drawn for reference
+	var cubeScale = scale(10, 10, 10);
+	drawCube(p, mult(mv, cubeScale));
+	
 	drawPlanets(p, mv);
 }
 
 function drawPlanets(p, mv)
 {
+	// TODO center points should be calculated using planet orbit functions
+	
+	// *** Sun ***
+	var d = 0.0;
+	var center = vec4(d, 0.0, 0.0, 1.0);
+	var radius = RADIUS_SUN * SUN_SCALE;
+	drawSphere(p, mv, center, radius, true);
+	
+	
+	// *** Mercury ***
+	d = DIST_MERCURY * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_MERCURY * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
+	
 
-	var center = vec4(0.0, 0.0, 19.35, 1.0);
-	var radius = 0.383;	// 		Mercury / Earth
-	drawSphere(p, mv, center, radius);
+	// *** Venus ***
+	d = DIST_VENUS * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_VENUS * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
 	
+
+	// *** Earth ***
+	d = DIST_EARTH * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_EARTH * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
 	
-	center = vec4(0.0, 0.0, 50.0, 1.0);
-	radius = 1.0;	// 		Earth / Earth
-	drawSphere(p, mv, center, radius);
+
+	// *** Mars ***
+	d = DIST_MARS * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_MARS * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
+	
+
+	// *** Jupiter ***
+	d = DIST_JUPITER * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_JUPITER * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
+	
+
+	// *** Saturn ***
+	d = DIST_SATURN * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_SATURN * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
+	
+
+	// *** Uranus ***
+	d = DIST_URANUS * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_URANUS * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
+	
+
+	// *** Neptune ***
+	d = DIST_NEPTUNE * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_NEPTUNE * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
+	
+
+	// *** Pluto ***
+	d = DIST_PLUTO * DIST_SCALE;
+	center = vec4(d, 0.0, 0.0, 1.0);
+	radius = RADIUS_PLUTO * PLANET_SCALE;
+	drawSphere(p, mv, center, radius, false);
 }
+
+
+
+
+
+
+
+
+
