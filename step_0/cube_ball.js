@@ -365,20 +365,18 @@ window.onload = function init()
 			dx = curPos[0] - theLastPos[0];
 			dy = curPos[1] - theLastPos[1];
 			dz = curPos[2] - theLastPos[2];
+
 			if (dx || dy || dz) 
 			{
 				/* compute theta and cross product */
 				theAngle = 90.0 * Math.sqrt(dx*dx + dy*dy + dz*dz) / 180.0 * Math.PI;
 				theAxis = cross(theLastPos, curPos);
-                
-				var q = trackball_vtoq(theAngle, theAxis);
-		
-				if (theInit) {
-					theCurtQuat = q;
-					theInit = false;
-				} else {	
-					theCurtQuat = multiplyQuat(q, theCurtQuat);
-				}
+                var mouseDelta = vec2(dx, dy);
+
+                /* update rotation quaternions */
+				updateRQuat(theAngle, theAxis, mouseDelta);  
+
+				rotateCamera();
 
 				/* update position */
 				theLastPos[0] = curPos[0];
@@ -418,6 +416,19 @@ window.onload = function init()
 			stopScale(x, y);
 		}
     });
+    
+    canvas.addEventListener("mouseout", function(e) {
+        stopMotion(0, 0);
+        stopScale(0, 0);
+    } );
+
+    document.addEventListener("keydown", function(e) {
+        var event = e || window.event;
+        var key = event.keyCode;
+        var moved = false;
+
+        translateCamera(key);
+    } );
 };
 
 function inverseMatrix(matrix) {
@@ -461,14 +472,8 @@ function render()
     var  p = perspective( theFovy, theAspect, theZNear, theZFar );
 	
     // modelview matrix
-	var t = translate(0, 0, -256.0);
-	var s = scale(theScale, theScale, theScale);
-	var r = buildRotationMatrix(theCurtQuat);
-	var mv = mat4();
-	mv = mult(mv, t);
-	mv = mult(mv, s);
-	mv = mult(mv, r);
-	
+	var mv = lookAt(eye, at, up);
+
 	// time
 	time += timeDelta;
 	date += 0.10;
@@ -483,19 +488,6 @@ function render()
 	drawPlanets(p, mv);
 	drawOrbits(p, mv);
     requestAnimFrame( render );
-
-    //projection matrix
-    var  p = perspective( theFovy, theAspect, theZNear, theZFar );
-    
-    //modelview matrix
-    var t = translate(0, 0, 0);
-    var s = scale(theScale, theScale, theScale);
-    var r = buildRotationMatrix(theCurtQuat);
-    var mv = mat4();
-    mv = mult(mv, t);
-    mv = mult(mv, s);
-    mv = mult(mv, r);
-    
 }
 
 function drawPlanets(p, mv)
