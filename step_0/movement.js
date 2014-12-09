@@ -12,6 +12,11 @@ var speed = 3.0;
 var theUpDownQuat = vec4(1.0, 0.0, 0.0, 0.0);
 var theLeftRightQuat = vec4(1.0, 0.0, 0.0, 0.0);
 
+var fowardKey = false;
+var rightKey = false;
+var leftKey = false;
+var backKey = false;
+
 function rotateCamera() {
     /* rotate localForward in the UpDown direction */
     var p = vec4(0.0, localForward);
@@ -38,27 +43,66 @@ function rotateCamera() {
        up = scalev(-1.0, up);
 }
 
-function translateCamera(key) {
-    // pressed 'a'
+function keyUp(key){
+	// pressed 'a'
     if(key == 65) {
+        leftKey = false;
+    }
+    // pressed 'd'
+    if(key == 68) {
+        rightKey = false;
+    }
+    // pressed 'w'
+    if(key == 87) {
+        fowardKey = false;
+    }
+    //pressed 's'
+    if(key == 83) {
+        backKey = false;
+    }
+}
+
+function keyDown(key){
+	// pressed 'a'
+    if(key == 65) {
+        leftKey = true;
+    }
+    // pressed 'd'
+    if(key == 68) {
+        rightKey = true;
+    }
+    // pressed 'w'
+    if(key == 87) {
+        fowardKey = true;
+    }
+    //pressed 's'
+    if(key == 83) {
+        backKey = true;
+    }
+}
+
+function translateCamera() {
+	var moved = false;
+    // pressed 'a'
+    if(leftKey) {
         eye = add(eye, scalev(speed, localLeft));
         at = add(at, scalev(speed, localLeft));
         moved = true;
     }
     // pressed 'd'
-    if(key == 68) {
+    if(rightKey) {
         eye = add(eye, scalev(-1.0*speed, localLeft));
         at = add(at, scalev(-1.0*speed, localLeft));
         moved = true;
     }
     // pressed 'w'
-    if(key == 87) {
+    if(fowardKey) {
         eye = add(eye, scalev(speed, localForward));
         at = add(at, scalev(speed, localForward));
         moved = true;
     }
     //pressed 's'
-    if(key == 83) {
+    if(backKey) {
         eye = add(eye, scalev(-1.0*speed, localForward));
         at = add(at, scalev(-1.0*speed, localForward));
         moved = true;

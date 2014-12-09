@@ -1,5 +1,7 @@
 
 function getPlanet(x, y){
+
+    gl.activeTexture(gl.TEXTURE1);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 	gl.clear( gl.COLOR_BUFFER_BIT );
 	
@@ -7,17 +9,14 @@ function getPlanet(x, y){
     var  p = perspective( theFovy, theAspect, theZNear, theZFar );
 	
     // modelview matrix
-	var t = translate(0, 0, -256.0);
-	var s = scale(theScale, theScale, theScale);
-	var r = buildRotationMatrix(theCurtQuat);
-	var mv = mat4();
-	mv = mult(mv, t);
-	mv = mult(mv, s);
-	mv = mult(mv, r);
+	var mv = lookAt(eye, at, up);
 	
 	drawPlanets(p, mv, true);
 	
-	gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, color);
+
+	var xPixel = (x+1)/2.0*canvas.width;
+	var yPixel = (y+1)/2.0*canvas.height;
+	gl.readPixels(xPixel, yPixel, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, color);
 	
 
 	// use codes to decipher planet by color
@@ -48,9 +47,11 @@ function getPlanet(x, y){
 	}
 	
 	if(body && body.name){
-		document.getElementById("info").innerHTML = body.name;
+		document.getElementById("info").innerHTML = body.name + "     at (" + x + ", " + y + ")";
+		console.log("Planet Info: " + body.name);
 	} else {
-		document.getElementById("info").innerHTML = "";
+		console.log("No Planet Info: " + code);
+		document.getElementById("info").innerHTML = "No Planet Info     at (" + x + ", " + y + ")";
 	}
 	
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -70,10 +71,11 @@ var texture;
 var color = new Uint8Array(4);
 
 function initFrameBuffer() {
+    gl.activeTexture(gl.TEXTURE1);
 	texture = gl.createTexture();
     gl.bindTexture( gl.TEXTURE_2D, texture );
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, CANVAS_SIZE, CANVAS_SIZE, 0, 
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, CANVAS_SIZE_X, CANVAS_SIZE_Y, 0, 
        gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.generateMipmap(gl.TEXTURE_2D);
 	

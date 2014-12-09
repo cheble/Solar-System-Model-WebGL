@@ -41,7 +41,8 @@ var SAT_DIST_SCALE = 5e-6;
 
 // END SCALES
 
-var CANVAS_SIZE = 900;
+var CANVAS_SIZE_X = 2048;
+var CANVAS_SIZE_Y = 1024;
 
 // Rotation related functions
 function trackball_ptov(x, y,  v)
@@ -297,7 +298,7 @@ function drawSphere(p, mv, center, radius, luminous, colorCode)
 	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "shininess"), shininess );
 	
 	gl.uniform4fv( gl.getUniformLocation(theSphereProgram, "center"), flatten(center));
-	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "radius"), theScale*radius );
+	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "radius"), radius );
 	
     // Associate out shader variables with our data buffer
     var vPosition = gl.getAttribLocation(theSphereProgram, "vPosition");
@@ -352,9 +353,8 @@ window.onload = function init()
 		} else if (e.button == 1) {
 			startScale(x, y);
 		} else if (e.button == 2) {
-			var xPixel = (x+1)/2.0*canvas.width;
-			var yPixel = (y+1)/2.0*canvas.height;
-			getPlanet(xPixel, yPixel);
+			getPlanet(x, y);
+			return false;
 		}
 
     } );
@@ -440,8 +440,18 @@ window.onload = function init()
         var key = event.keyCode;
         var moved = false;
 
-        translateCamera(key);
+        keyDown(key);
     } );
+
+    document.addEventListener("keyup", function(e) {
+        var event = e || window.event;
+        var key = event.keyCode;
+        var moved = false;
+
+        keyUp(key);
+    } );
+    
+    canvas.addEventListener("contextmenu", function(e) {return false;});
 };
 
 function inverseMatrix(matrix) {
@@ -487,15 +497,8 @@ function render()
     var  p = perspective( theFovy, theAspect, theZNear, theZFar );
 	
     // modelview matrix
-	var t = translate(0, 0, -256.0);
-	var s = scale(theScale, theScale, theScale);
-	var r = buildRotationMatrix(theCurtQuat);
-	var mv = mat4();
-	mv = mult(mv, t);
-	mv = mult(mv, s);
-	mv = mult(mv, r);
-	
-	mv = lookAt(eye, at, up);
+    translateCamera();
+	var mv = lookAt(eye, at, up);
 
 	// time
 	date += 0.10;
