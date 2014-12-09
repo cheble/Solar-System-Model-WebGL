@@ -350,11 +350,9 @@ window.onload = function init()
 		
 		if (e.button == 0) { 
 			startMotion(x, y);
+			getPlanet(x, y);
 		} else if (e.button == 1) {
 			startScale(x, y);
-		} else if (e.button == 2) {
-			getPlanet(x, y);
-			return false;
 		}
 
     } );
@@ -665,7 +663,6 @@ function drawOrbits(p, mv)
 		false, flatten(mv));   
   
 
-	theOrbitVBOPoints = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, theOrbitVBOPoints);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(theOrbitPoints), gl.STATIC_DRAW); 
 	
@@ -683,5 +680,6 @@ function addOrbitPos( pos ){
 	theOrbitPoints[orbitIndex++] = pos;
 	
 	orbitIndex = orbitIndex % 20000;
-		
+	theOrbitPoints.push(pos);
+	
 }

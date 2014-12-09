@@ -59,13 +59,6 @@ function getPlanet(x, y){
 	
 }
 
-function addOrbitPos( pos ){
-	theOrbitPoints[orbitIndex++] = pos;
-	
-	orbitIndex = orbitIndex % 20000;
-		
-}
-
 var framebuffer;
 var texture;
 var color = new Uint8Array(4);

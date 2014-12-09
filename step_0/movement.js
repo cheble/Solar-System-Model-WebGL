@@ -7,7 +7,7 @@ var localForward = calculateLocalForward();
 var localUp = up;
 var localLeft = calculateLocalLeft();
 
-var speed = 3.0;
+var speed = 1.0;
 
 var theUpDownQuat = vec4(1.0, 0.0, 0.0, 0.0);
 var theLeftRightQuat = vec4(1.0, 0.0, 0.0, 0.0);
