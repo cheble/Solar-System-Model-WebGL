@@ -89,6 +89,8 @@ main()
 <script id="sphere-fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
 
+#extension GL_EXT_frag_depth : enable
+
 varying vec3 fPosition;
 varying vec3 fCenter;
 varying vec3 L, E;
@@ -98,14 +100,13 @@ uniform float ka;
 uniform float kd;
 uniform float ks;
 uniform float shininess;
-uniform samplerCube texMap;
-uniform mat4 modelViewMatrix;
-uniform mat4 inveseMVMatrix;
-uniform mat4 projectionMatrix;
 
 void
 main()
 {
+	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);			// point is outside of the circle
+
+
 	vec4 fColor = vec4(1.0, 1.0, 1.0, 1.0);
 
 	float radius = scale;								// circle radius
@@ -115,12 +116,15 @@ main()
 	
     if (distance > radius) {
 		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);			// point is outside of the circle
+		discard;
         return;
 	}
-
+	
     float x = fPosition.x - fCenter.x;
     float y = fPosition.y - fCenter.y;
     float z = - sqrt(radius*radius - x * x - y * y);
+
+	gl_FragDepthEXT = gl_FragCoord.z;
     
     vec3 norm = normalize(vec3(x, y, z));					// normal vector of the circle
 
@@ -147,6 +151,8 @@ main()
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="cube_ball.js"></script>
+<script type="text/javascript" src="planet_data.js"></script>
+<script type="text/javascript" src="planet_calc.js"></script>
 </head>
 
 <body>
