@@ -1,15 +1,17 @@
 var Orbit = function() {
 	this.VBOPoints = gl.createBuffer();
 	this.Index = 0;
+	this.orbitLength = 1000;
 	this.Points = [];
 	this.visible = true;
 	this.orbitSize = 1.0;
 	this.orbitColor = [ 128, 128, 0, 0.3 ];
 
 	this.addOrbitPos = function( pos ) {
-		this.Points[this.Index++] = pos;
-		
-		this.Index = this.Index % 20000;
+		if(this.Points.length >= this.orbitLength) {
+            theOrbits.Points.splice(0, theOrbits.Points.length - theOrbits.orbitLength);
+		}
+		this.Points.push(pos)
 	}
 
 	this.drawOrbits = function(p, mv) {
