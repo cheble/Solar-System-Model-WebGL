@@ -32,7 +32,6 @@ attribute vec4 vPosition;
 
 varying vec3 fPosition;
 varying vec3 fCenter;
-varying float radius;
 varying vec3 L, E;
 
 uniform vec4 lightPosition;
@@ -40,7 +39,7 @@ uniform vec4 lightPosition;
 
 precision mediump float;
 uniform vec4 center;
-uniform float scale;
+uniform float radius;
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 
@@ -72,7 +71,7 @@ main()
 		
 	}
 
-	vec3 t = pPrime + normalize(vPrime)*scale*sqrt(2.0);// vertex position of the square
+	vec3 t = pPrime + normalize(vPrime)*radius*sqrt(2.0);// vertex position of the square
 	
 	vec4 tPrime = projectionMatrix * vec4(t, 1.0);			// vertex position with the projection applied
 
@@ -95,37 +94,34 @@ varying vec3 fPosition;
 varying vec3 fCenter;
 varying vec3 L, E;
 
-uniform float scale;
+uniform float radius;
 uniform float ka;
 uniform float kd;
 uniform float ks;
 uniform float shininess;
+uniform float colorCode;
 
 void
 main()
 {
-	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);			// point is outside of the circle
-
-
-	vec4 fColor = vec4(1.0, 1.0, 1.0, 1.0);
-
-	float radius = scale;								// circle radius
+	gl_FragDepthEXT = gl_FragCoord.z;
 	
     vec3 dif = fPosition - fCenter;
 	float distance = length(dif);							// distance from the center of the circle
-	
     if (distance > radius) {
-		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);			// point is outside of the circle
 		discard;
         return;
 	}
 	
+	if(colorCode != 0.0){
+		gl_FragColor = vec4(colorCode, 0.0, 0.0, 1.0);
+		return;
+	}
+
     float x = fPosition.x - fCenter.x;
     float y = fPosition.y - fCenter.y;
     float z = - sqrt(radius*radius - x * x - y * y);
-
-	gl_FragDepthEXT = gl_FragCoord.z;
-    
+	
     vec3 norm = normalize(vec3(x, y, z));					// normal vector of the circle
 
 	vec3 LL = normalize(L);
@@ -138,7 +134,8 @@ main()
     float specular = ks * pow( max(dot(norm, H), 0.0), shininess );
     
     if( dot(LL, norm) < 0.0 ) specular = 0.0;
-
+	
+	vec4 fColor = vec4(1.0, 1.0, 1.0, 1.0);
     fColor = fColor * (ambient + diffuse) + vec4(1.0) * specular;
     fColor.a = 1.0;
     
@@ -177,7 +174,6 @@ main()
 	gl_FragColor = textureCube(skybox, fTexCoord);
 }
 </script>
-</script>
 
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/initShaders.js"></script>
@@ -187,11 +183,14 @@ main()
 <script type="text/javascript" src="cube_ball.js"></script>
 <script type="text/javascript" src="planet_data.js"></script>
 <script type="text/javascript" src="planet_calc.js"></script>
+<script type="text/javascript" src="planet_info.js"></script>
 </head>
 
 <body>
-<canvas id="gl-canvas" width="2048" height="1024">
+<canvas id="gl-canvas" width="900" height="900">
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
+<div id="info" style="display:inline-block;">
+</div>
 </body>
 </html>

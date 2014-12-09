@@ -1,4 +1,5 @@
 var gl;
+var canvas;
 
 // ============================================================================
 // Projection and modelview related data structures and functions
@@ -23,11 +24,7 @@ var	theCurtQuat = [1, 0, 0, 0];
 var	theScale = 1.0;
 var theInit = true;
 
-var time = 0.0;
 var date = -3543.0;
-
-var timeDelta = 1e-8;
-
 
 var lightPosition = vec4(0.0, 0.0, 0.0, 1.0 );
 var ka = 0.1;
@@ -43,6 +40,8 @@ var DIST_SCALE = 2e-7;
 var SAT_DIST_SCALE = 5e-6;
 
 // END SCALES
+
+var CANVAS_SIZE = 900;
 
 // Rotation related functions
 function trackball_ptov(x, y,  v)
@@ -268,13 +267,20 @@ function initSphere()
     gl.bufferData(gl.ARRAY_BUFFER, flatten(theSpherePoints), gl.STATIC_DRAW);
 }
 
-function drawSphere(p, mv, center, radius, luminous) 
+function drawSphere(p, mv, center, radius, luminous, colorCode) 
 {
     gl.useProgram(theSphereProgram);
 	
 	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "projectionMatrix"),false, flatten(p));
 	 
 	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "modelViewMatrix"),false, flatten(mv));
+
+	if(colorCode){
+		var code = colorCode/256.0;
+		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "colorCode"), code);
+	} else {
+		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "colorCode"), 0.0);
+	}
 	
 	if(luminous){
 		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), 0.9);
@@ -291,7 +297,7 @@ function drawSphere(p, mv, center, radius, luminous)
 	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "shininess"), shininess );
 	
 	gl.uniform4fv( gl.getUniformLocation(theSphereProgram, "center"), flatten(center));
-	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "scale"), theScale*radius );
+	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "radius"), theScale*radius );
 	
     // Associate out shader variables with our data buffer
     var vPosition = gl.getAttribLocation(theSphereProgram, "vPosition");
@@ -307,7 +313,7 @@ function drawSphere(p, mv, center, radius, luminous)
 // ============================================================================
 window.onload = function init()
 {
-    var canvas = document.getElementById("gl-canvas");
+    canvas = document.getElementById("gl-canvas");
     
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) { 
@@ -316,7 +322,6 @@ window.onload = function init()
     
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
-    //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	gl.getExtension("EXT_frag_depth");
 	
@@ -324,6 +329,9 @@ window.onload = function init()
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor(0.0, 0.0, 0.0, 1.0 );	
 	theAspect = canvas.width * 1.0 / canvas.height;
+
+	// init frame buffer
+	initFrameBuffer();
 	
     initTextures();
     initSkybox();
@@ -342,6 +350,10 @@ window.onload = function init()
 			startMotion(x, y);
 		} else if (e.button == 1) {
 			startScale(x, y);
+		} else if (e.button == 2) {
+			var xPixel = (x+1)/2.0*canvas.width;
+			var yPixel = (y+1)/2.0*canvas.height;
+			getPlanet(xPixel, yPixel);
 		}
 
     } );
@@ -465,107 +477,161 @@ function inverseMatrix(matrix) {
 // Rendering function
 // ============================================================================
 function render() 
-{  
+{
+	// increment date
+	date += 0.10;
+	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-	time = time+1;
 	// projection matrix
     var  p = perspective( theFovy, theAspect, theZNear, theZFar );
 	
     // modelview matrix
-	var mv = lookAt(eye, at, up);
+	var t = translate(0, 0, -256.0);
+	var s = scale(theScale, theScale, theScale);
+	var r = buildRotationMatrix(theCurtQuat);
+	var mv = mat4();
+	mv = mult(mv, t);
+	mv = mult(mv, s);
+	mv = mult(mv, r);
+	
+	mv = lookAt(eye, at, up);
 
 	// time
-	time += timeDelta;
 	date += 0.10;
 	
     // draw the skybox first of all
     drawSkybox(p, mv);
 
 	// drawn for reference
-	var cubeScale = scale(10, 10, 10);
+	//var cubeScale = scale(10, 10, 10);
 	//drawCube(p, mult(mv, cubeScale));
-	
-	drawPlanets(p, mv);
+
 	drawOrbits(p, mv);
+	drawPlanets(p, mv);
+	
     requestAnimFrame( render );
 }
 
-function drawPlanets(p, mv)
+function drawPlanets(p, mv, colorCode)
 {
-	// TODO center points should be calculated using planet orbit functions
+	// TODO if colorCode: call drawSphere with a color code and ignore lighting in shader
 	
 	// *** Sun ***
 	var center = vec4(0.0, 0.0, 0.0, 1.0);
 	var radius = SUN.radius * SUN_SCALE;
-	drawSphere(p, mv, center, radius, true);
-	
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, SUN.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, true);
+	}
 	
 	// *** Mercury ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(MERCURY, date/36525.0)), 1.0 );
 	radius = MERCURY.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, MERCURY.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 	
 	
 	// *** Venus ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(VENUS, date/36525.0)), 1.0 );
 	radius = VENUS.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, VENUS.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 	
 
 	// *** Earth ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)), 1.0 );
 	radius = EARTH.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, EARTH.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
+	
 	
 	// *** Moon ***
 	center = vec4( add(vec3(center), scalev(SAT_DIST_SCALE, planetPosition(MOON, date/36525.0))), 1.0 );
 	radius = MOON.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, MOON.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 	
 
 	// *** Mars ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(MARS, date/36525.0)), 1.0 );
 	radius = MARS.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, MARS.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 	
 
 	// *** Jupiter ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(JUPITER, date/36525.0)), 1.0 );
 	radius = JUPITER.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, JUPITER.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 
 	// *** Saturn ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(SATURN, date/36525.0)), 1.0 );
 	radius = SATURN.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, SATURN.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 	
 
 	// *** Uranus ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(URANUS, date/36525.0)), 1.0 );
 	radius = URANUS.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, URANUS.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 	
 
 	// *** Neptune ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(NEPTUNE, date/36525.0)), 1.0 );
 	radius = NEPTUNE.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, NEPTUNE.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 	
 
 	// *** Pluto ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(PLUTO, date/36525.0)), 1.0 );
 	radius = PLUTO.radius * PLANET_SCALE;
-	drawSphere(p, mv, center, radius, false);
-	addOrbitPos(center);
+	if(colorCode){
+		drawSphere(p, mv, center, radius, false, PLUTO.colorCode);
+	}else{
+		drawSphere(p, mv, center, radius, false);
+		addOrbitPos(center);
+	}
 	
 }
 
@@ -607,6 +673,7 @@ function drawOrbits(p, mv)
     
 	gl.drawArrays(gl.POINTS, 0, theOrbitPoints.length);
 }
+
 
 function addOrbitPos( pos ){
 	theOrbitPoints[orbitIndex++] = pos;
