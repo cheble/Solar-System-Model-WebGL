@@ -1,0 +1,22 @@
+body, html{
+	width: 100%;
+	height: 100%;
+	border: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+
+canvas {
+	/*
+	width: 100%;
+	height: 100%;
+	*/
+}
+
+#info {
+	position: fixed;
+	left: 20px;
+	top: 20px;
+	color: white;
+	z-index: 100;
+}
