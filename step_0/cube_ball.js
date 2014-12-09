@@ -350,11 +350,9 @@ window.onload = function init()
 		
 		if (e.button == 0) { 
 			startMotion(x, y);
+			getPlanet(x, y);
 		} else if (e.button == 1) {
 			startScale(x, y);
-		} else if (e.button == 2) {
-			getPlanet(x, y);
-			return false;
 		}
 
     } );
