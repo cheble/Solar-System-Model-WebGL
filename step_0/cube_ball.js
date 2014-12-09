@@ -312,6 +312,8 @@ function drawSphere(p, mv, center, radius, luminous, colorCode)
 // ============================================================================
 // WebGL Initialization
 // ============================================================================
+var theOrbits;
+
 window.onload = function init()
 {
     canvas = document.getElementById("gl-canvas");
@@ -334,11 +336,11 @@ window.onload = function init()
 	// init frame buffer
 	initFrameBuffer();
 	
+	theOrbits = new Orbit();	// already call the init
 	initGUI();
     initSkyboxTextures();
     initSkybox();
 	initCube();
-	initOrbits();
 	initSphere();
 	
     render();
@@ -508,7 +510,7 @@ function render()
 	//var cubeScale = scale(10, 10, 10);
 	//drawCube(p, mult(mv, cubeScale));
 
-	drawOrbits(p, mv);
+	theOrbits.drawOrbits(p, mv);
 	drawPlanets(p, mv);
 	
     requestAnimFrame( render );
@@ -534,7 +536,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, MERCURY.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 	
@@ -545,7 +547,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, VENUS.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 
@@ -556,7 +558,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, EARTH.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 	
@@ -567,7 +569,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, MOON.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 
@@ -578,7 +580,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, MARS.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 
@@ -589,7 +591,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, JUPITER.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 
 	// *** Saturn ***
@@ -599,7 +601,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, SATURN.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 
@@ -610,7 +612,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, URANUS.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 
@@ -621,7 +623,7 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, NEPTUNE.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 
@@ -632,54 +634,14 @@ function drawPlanets(p, mv, colorCode)
 		drawSphere(p, mv, center, radius, false, PLUTO.colorCode);
 	}else{
 		drawSphere(p, mv, center, radius, false);
-		addOrbitPos(center);
+		theOrbits.addOrbitPos(center);
 	}
 	
 }
 
 
-var theOrbitVBOPoints;
-var orbitIndex = 0;
-var theOrbitPoints = [];
 
 
-function initOrbits()
-{
-    
-    // Create VBOs and load the data into the VBOs
-	theOrbitVBOPoints = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, theOrbitVBOPoints);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(theOrbitPoints), gl.STATIC_DRAW);   
-}
-
-function drawOrbits(p, mv) 
-{
-    gl.useProgram(theCubeProgram);
-	
-	gl.uniformMatrix4fv( gl.getUniformLocation(theCubeProgram, "projectionMatrix"),
-		false, flatten(p));
-	   
-	gl.uniformMatrix4fv( gl.getUniformLocation(theCubeProgram, "modelViewMatrix"), 
-		false, flatten(mv));   
-  
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, theOrbitVBOPoints);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(theOrbitPoints), gl.STATIC_DRAW); 
-	
-    // Associate out shader variables with our data buffer
-    var vPosition = gl.getAttribLocation(theCubeProgram, "vPosition");
-    gl.bindBuffer(gl.ARRAY_BUFFER, theOrbitVBOPoints);      
-    gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vPosition);
-    
-	gl.drawArrays(gl.POINTS, 0, theOrbitPoints.length);
-}
 
 
-function addOrbitPos( pos ){
-	theOrbitPoints[orbitIndex++] = pos;
-	
-	orbitIndex = orbitIndex % 20000;
-	theOrbitPoints.push(pos);
-	
-}
+
