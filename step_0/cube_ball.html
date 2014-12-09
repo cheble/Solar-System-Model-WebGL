@@ -8,22 +8,25 @@ attribute vec4 vPosition;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
+uniform float orbitSize;
 
 void
 main()
 {    
-	gl_PointSize = 1.0;
-     gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+	gl_PointSize = orbitSize;
+    gl_Position = projectionMatrix * modelViewMatrix * vPosition;
 }
 </script>
 
 <script id="cube-fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
 
+uniform vec4 orbitColor;
+
 void
 main()
 {
-	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+	gl_FragColor = orbitColor;
 }
 </script>
 

@@ -20,4 +20,7 @@ function initGUI() {
     // =========================
     var guiOrbits = theGUI.addFolder('Orbits');
     guiOrbits.add(theOrbits, 'visible');
+    guiOrbits.add(theOrbits, 'orbitSize', -0.5, 2.0);
+    guiOrbits.addColor(theOrbits, 'orbitColor');
+    // guiOrbits.add(theOrbits, 'orbitColor');
 }

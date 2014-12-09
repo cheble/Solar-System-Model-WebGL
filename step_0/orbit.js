@@ -1,13 +1,15 @@
 var Orbit = function() {
-	this.theOrbitVBOPoints = gl.createBuffer();
-	this.orbitIndex = 0;
-	this.theOrbitPoints = [];
+	this.VBOPoints = gl.createBuffer();
+	this.Index = 0;
+	this.Points = [];
 	this.visible = true;
+	this.orbitSize = 1.0;
+	this.orbitColor = [ 128, 128, 0, 0.3 ];
 
 	this.addOrbitPos = function( pos ) {
-		this.theOrbitPoints[this.orbitIndex++] = pos;
+		this.Points[this.Index++] = pos;
 		
-		this.orbitIndex = this.orbitIndex % 20000;
+		this.Index = this.Index % 20000;
 	}
 
 	this.drawOrbits = function(p, mv) {
@@ -18,17 +20,19 @@ var Orbit = function() {
 		   
 		gl.uniformMatrix4fv( gl.getUniformLocation(theCubeProgram, "modelViewMatrix"), 
 			false, flatten(mv));   
-	  
+		
+		gl.uniform1f( gl.getUniformLocation(theCubeProgram, "orbitSize"), this.orbitSize);
+		gl.uniform4fv( gl.getUniformLocation(theCubeProgram, "orbitColor"), this.orbitColor);
 
-	    gl.bindBuffer(gl.ARRAY_BUFFER, this.theOrbitVBOPoints);
-	    gl.bufferData(gl.ARRAY_BUFFER, flatten(this.theOrbitPoints), gl.STATIC_DRAW); 
+	    gl.bindBuffer(gl.ARRAY_BUFFER, this.VBOPoints);
+	    gl.bufferData(gl.ARRAY_BUFFER, flatten(this.Points), gl.STATIC_DRAW); 
 		
 	    // Associate out shader variables with our data buffer
 	    var vPosition = gl.getAttribLocation(theCubeProgram, "vPosition");
-	    gl.bindBuffer(gl.ARRAY_BUFFER, this.theOrbitVBOPoints);      
+	    gl.bindBuffer(gl.ARRAY_BUFFER, this.VBOPoints);      
 	    gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
 	    gl.enableVertexAttribArray(vPosition);
 	    
-		if(this.visible) gl.drawArrays(gl.POINTS, 0, this.theOrbitPoints.length);
+		if(this.visible) gl.drawArrays(gl.POINTS, 0, this.Points.length);
 	}
 }
