@@ -333,7 +333,8 @@ window.onload = function init()
 	// init frame buffer
 	initFrameBuffer();
 	
-    initTextures();
+	initGUI();
+    initSkyboxTextures();
     initSkybox();
 	initCube();
 	initOrbits();
