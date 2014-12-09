@@ -7,7 +7,7 @@ var gl;
 var	theFovy = 45.0;  		// Field-of-view in Y direction angle (in degrees)
 var theAspect = 1.0;       // Viewport aspect ratio
 var theZNear = 0.1;
-var theZFar = 1000.0;
+var theZFar = 10000.0;
 
 // Rotation parameters
 var theAngle = 0.0;
@@ -325,6 +325,8 @@ window.onload = function init()
     gl.clearColor(0.0, 0.0, 0.0, 1.0 );	
 	theAspect = canvas.width * 1.0 / canvas.height;
 	
+    initTextures();
+    initSkybox();
 	initCube();
 	initOrbits();
 	initSphere();
@@ -471,6 +473,9 @@ function render()
 	time += timeDelta;
 	date += 0.10;
 	
+    // draw the skybox first of all
+    drawSkybox(p, mv);
+
 	// drawn for reference
 	var cubeScale = scale(10, 10, 10);
 	//drawCube(p, mult(mv, cubeScale));
@@ -478,6 +483,19 @@ function render()
 	drawPlanets(p, mv);
 	drawOrbits(p, mv);
     requestAnimFrame( render );
+
+    //projection matrix
+    var  p = perspective( theFovy, theAspect, theZNear, theZFar );
+    
+    //modelview matrix
+    var t = translate(0, 0, 0);
+    var s = scale(theScale, theScale, theScale);
+    var r = buildRotationMatrix(theCurtQuat);
+    var mv = mat4();
+    mv = mult(mv, t);
+    mv = mult(mv, s);
+    mv = mult(mv, r);
+    
 }
 
 function drawPlanets(p, mv)
@@ -604,10 +622,3 @@ function addOrbitPos( pos ){
 	orbitIndex = orbitIndex % 20000;
 		
 }
-
-
-
-
-
-
-
