@@ -663,7 +663,6 @@ function drawOrbits(p, mv)
 		false, flatten(mv));   
   
 
-	theOrbitVBOPoints = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, theOrbitVBOPoints);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(theOrbitPoints), gl.STATIC_DRAW); 
 	
@@ -681,5 +680,6 @@ function addOrbitPos( pos ){
 	theOrbitPoints[orbitIndex++] = pos;
 	
 	orbitIndex = orbitIndex % 20000;
-		
+	theOrbitPoints.push(pos);
+	
 }
