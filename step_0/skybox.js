@@ -166,15 +166,3 @@ function handleTextureLoaded(image, texture) {
     gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
     // gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 }
-
-function initGUI() {
-    theSkyboxSource = new SkyboxTextureSource();
-
-    var gui = new dat.GUI();
-    // Choose from accepted values
-    var reloadTexture = gui.add(theSkyboxSource, 'background', [ 'Purple Nebula', 'Astonishing', 'Green Cloud']);
-
-    reloadTexture.onChange(function(value) {
-        initSkyboxTextures();
-    });
-}
