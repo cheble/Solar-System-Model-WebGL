@@ -21,25 +21,25 @@ var path = "resources" + separator + "skybox" + separator;
 var theSkyboxVBOPoints;
 var theSkyboxProgram;
 var theSkyboxPoints = [];
-var skyboxTextures = [];
-var skyImage = new Array(6);
+var theSkyboxTextures = [];
+var theSkyImage = new Array(6);
 var theSkyboxSource;
 
-var TextureSource = function() {
-    this.textureSources = "Purple Nebula";
+var SkyboxTextureSource = function() {
+    this.background = "Purple Nebula";
 
     this.getSource = function() {
-        if(this.textureSources == "Purple Nebula") {
-            return textureSources3;
-        } else if(this.textureSources == "Astonishing") {
-            return textureSources2;
-        } else if(this.textureSources == "Green Cloud") {
-            return textureSources1;
+        if(this.background == "Purple Nebula") {
+            return background3;
+        } else if(this.background == "Astonishing") {
+            return background2;
+        } else if(this.background == "Green Cloud") {
+            return background1;
         }
 
     }
 
-    var textureSources1 = [
+    var background1 = [
         "green_cloud_0.jpg",
         "green_cloud_1.jpg",
         "green_cloud_2.jpg",
@@ -48,7 +48,7 @@ var TextureSource = function() {
         "green_cloud_5.jpg"
     ]
 
-    var textureSources2 = [
+    var background2 = [
         "astonishing-0.jpg",
         "astonishing-1.jpg",
         "astonishing-2.jpg",
@@ -57,7 +57,7 @@ var TextureSource = function() {
         "astonishing-5.jpg"
     ]
 
-    var textureSources3 = [
+    var background3 = [
         "purple_nebula-0.jpg",
         "purple_nebula-1.jpg",
         "purple_nebula-2.jpg",
@@ -132,7 +132,7 @@ function drawSkybox(p, mv)
     gl.enableVertexAttribArray(vPosition);
 
     gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_CUBE_MAP, skyboxTextures);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, theSkyboxTextures);
     gl.uniform1i(gl.getUniformLocation(theSkyboxProgram, "skybox"), 0);
 
     for (var i = 0; i < 6; i++) {
@@ -142,14 +142,14 @@ function drawSkybox(p, mv)
 
 function initSkyboxTextures() {
     var counter = 0;
-    skyboxTextures = gl.createTexture();
+    theSkyboxTextures = gl.createTexture();
     for(var i = 0 ; i < 6 ; i++) {
-        skyImage[i] = new Image();
-        skyImage[i].src = path + theSkyboxSource.getSource()[i];    
-        skyImage[i].onload = function()  { 
+        theSkyImage[i] = new Image();
+        theSkyImage[i].src = path + theSkyboxSource.getSource()[i];    
+        theSkyImage[i].onload = function()  { 
             counter++;
             if(counter == 6) { // call the function only one time: after finish loading the 6 images
-                handleTextureLoaded(skyImage, skyboxTextures);
+                handleTextureLoaded(theSkyImage, theSkyboxTextures);
             }
         }  
     }
@@ -168,11 +168,11 @@ function handleTextureLoaded(image, texture) {
 }
 
 function initGUI() {
-    theSkyboxSource = new TextureSource();
+    theSkyboxSource = new SkyboxTextureSource();
 
     var gui = new dat.GUI();
     // Choose from accepted values
-    var reloadTexture = gui.add(theSkyboxSource, 'textureSources', [ 'Purple Nebula', 'Astonishing', 'Green Cloud']);
+    var reloadTexture = gui.add(theSkyboxSource, 'background', [ 'Purple Nebula', 'Astonishing', 'Green Cloud']);
 
     reloadTexture.onChange(function(value) {
         initSkyboxTextures();
