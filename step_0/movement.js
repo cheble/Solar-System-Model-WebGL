@@ -112,6 +112,8 @@ function translateCamera() {
         theLeftRightQuat = vec4(1.0, 0.0, 0.0, 0.0);
         localForward = calculateLocalForward();
         localLeft = calculateLocalLeft();
+        // stop tracking the planet
+        theMovement.trackingPlanet = false;
     }
 }
     
@@ -163,4 +165,78 @@ function calculateLocalLeft() {
 
 function calculateLocalUp(forward, left) {
     return scalev( 1.0 / length(cross(forward, left)), cross(forward, left) );
+}
+
+var theMovement;
+var MovementOptions = function() {
+    this.trackingPlanet = false;
+    this.followPlanet = " -- ";
+    this.direction = "up";
+
+    var myDirection = vec3(0.0, 0.0, 1.0);
+    var myTheta = 0;
+    var myUp = vec3(0.0, 1.0, 0.0);
+    this.chooseDirection = function() {
+        switch(this.direction) {
+            case "up":
+                myDirection = vec3(0.0, 0.0, 1.0);
+                myUp = vec3(0.0, 1.0, 0.0);
+                break;
+            case "down":
+                myDirection = vec3(0.0, 0.0, -1.0);
+                myUp = vec3(0.0, 1.0, 0.0);
+                break;
+            case "side":
+                myDirection = vec3(Math.cos(myTheta), Math.sin(myTheta), 0.0);
+                myUp = vec3(0.0, 0.0, 1.0);
+                break;
+        }
+    }
+
+    this.track = function() {
+        switch(this.followPlanet) {
+            case "Mercury":
+                center = vec3( scalev(DIST_SCALE, planetPosition(MERCURY, date/36525.0)));
+                offset = 10 * MERCURY.radius * PLANET_SCALE;
+                break;
+            case "Venus":
+                center = vec3( scalev(DIST_SCALE, planetPosition(VENUS, date/36525.0)));
+                offset = 9 * VENUS.radius * PLANET_SCALE;
+                break;
+            case "Earth":
+                center = vec3( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)));
+                offset = 8 * EARTH.radius * PLANET_SCALE;
+                break;
+            case "Mars":
+                center = vec3( scalev(DIST_SCALE, planetPosition(MARS, date/36525.0)));
+                offset = 10 * MARS.radius * PLANET_SCALE;
+                break;
+            case "Jupiter":
+                center = vec3( scalev(DIST_SCALE, planetPosition(JUPITER, date/36525.0)));
+                offset = 3 * JUPITER.radius * PLANET_SCALE;
+                break;
+            case "Saturn":
+                center = vec3( scalev(DIST_SCALE, planetPosition(SATURN, date/36525.0)));
+                offset = 3 * SATURN.radius * PLANET_SCALE;
+                break;
+            case "Uranus":
+                center = vec3( scalev(DIST_SCALE, planetPosition(URANUS, date/36525.0)));
+                offset = 4 * URANUS.radius * PLANET_SCALE;
+                break;
+            case "Neptune":
+                center = vec3( scalev(DIST_SCALE, planetPosition(NEPTUNE, date/36525.0)));
+                offset = 5 * NEPTUNE.radius * PLANET_SCALE;
+                break;
+            case "Pluto":
+                center = vec3( scalev(DIST_SCALE, planetPosition(PLUTO, date/36525.0)));
+                offset = 20 * PLUTO.radius * PLANET_SCALE;
+                break;
+            default:
+        }
+        offsetVector = vec3(scalev(offset, myDirection));
+        eye = add(center, offsetVector);     
+        at = center;
+        up = myUp;    
+        myTheta += 1.0;
+    }
 }

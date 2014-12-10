@@ -356,7 +356,6 @@ window.onload = function init()
 		} else if (e.button == 1) {
 			startScale(x, y);
 		}
-
     } );
     
     canvas.addEventListener("mousemove", function(e){
@@ -370,7 +369,7 @@ window.onload = function init()
 		/* compute position on hemisphere */
 		trackball_ptov(x, y, curPos);
 		
-		if(theTrackingMove)
+		if(theTrackingMove && !theMovement.trackingPlanet)
 		{    
 			/*
 			 * compute the change in position on the hemisphere
@@ -398,23 +397,6 @@ window.onload = function init()
 			}
 			
 		} 
-
-		if (theScalingMove) {
-			if (theCurtX != x || theCurtY != y) {
-        
-				theScale += (theCurtY * 1.0 - y)/2.0 * 1.3 * theScale; // 2.0 -
-																		// the
-																		// windows
-																		// height
-				if (theScale <= 0.0) {
-					theScale = 0.00000001;
-				}
-        
-				theCurtX = x;
-				theCurtY = y;
-			}	
-			
-		}	
 
     });
    
@@ -490,7 +472,7 @@ function inverseMatrix(matrix) {
 function render() 
 {
 	// increment date
-	date += 0.10;
+	date += 0.10*theTime.getDateScale();
 	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 	// projection matrix
@@ -498,10 +480,8 @@ function render()
 	
     // modelview matrix
     translateCamera();
+    if(theMovement.trackingPlanet == true) theMovement.track();
 	var mv = lookAt(eye, at, up);
-
-	// time
-	date += 0.10;
 	
     // draw the skybox first of all
     drawSkybox(p, mv);
@@ -639,9 +619,11 @@ function drawPlanets(p, mv, colorCode)
 	
 }
 
+var theTime;
+var TimeOptions = function() {
+	this.speed = 1.0;
 
-
-
-
-
-
+	this.getDateScale = function() {
+		return this.speed;
+	}
+}

@@ -26,17 +26,16 @@ var theSkyImage = new Array(6);
 var theSkyboxSource;
 
 var SkyboxTextureSource = function() {
-    this.background = "Purple Nebula";
+    this.source = "Purple Nebula";
 
     this.getSource = function() {
-        if(this.background == "Purple Nebula") {
+        if(this.source == "Purple Nebula") {
             return background3;
-        } else if(this.background == "Astonishing") {
+        } else if(this.source == "Astonishing") {
             return background2;
-        } else if(this.background == "Green Cloud") {
+        } else if(this.source == "Green Cloud") {
             return background1;
         }
-
     }
 
     var background1 = [
@@ -68,7 +67,7 @@ var SkyboxTextureSource = function() {
 }
 
 
-var distScale = 1000;
+var distScale = 5000;
 var theSkyboxVertices = [
         vec4(-distScale, -distScale,  distScale, 1.0),
         vec4(-distScale,  distScale,  distScale, 1.0),
