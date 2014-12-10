@@ -21,7 +21,7 @@ function initGUI() {
     // =========================
     var guiOrbits = theGUI.addFolder('Orbits');
     guiOrbits.add(theOrbits, 'visible');
-    guiOrbits.add(theOrbits, 'orbitSize', 0.5, 2.0);
+    guiOrbits.add(theOrbits, 'orbitSize', 0.5, 3.0);
     guiOrbits.add(theOrbits, 'orbitLength', 1000, 100000).step(1);
     guiOrbits.addColor(theOrbits, 'orbitColor');
 
@@ -32,6 +32,7 @@ function initGUI() {
     theTime = new TimeOptions();
     var guiTime = theGUI.addFolder('Time');
     guiTime.add(theTime, 'speed', 0.1/60, 60);
+    guiTime.add(theTime, 'pause');
 
 
     // =========================
@@ -47,7 +48,8 @@ function initGUI() {
                 theMovement.trackingPlanet = true;
             }
     });
-    guiMovement.add(theMovement, 'direction', ['up', 'side', 'down']).onChange(function(value) {
-        theMovement.chooseDirection();
+    guiMovement.add(theMovement, 'direction', ['up', 'side', 'down']);
+    guiMovement.add(theMovement, 'rotationSpeed', ['zero', 'slow', 'fast', 'stationary']).onChange(function() {
+        theMovement.setRotationSpeed();
     });
 }

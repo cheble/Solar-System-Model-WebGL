@@ -172,11 +172,14 @@ var MovementOptions = function() {
     this.trackingPlanet = false;
     this.followPlanet = " -- ";
     this.direction = "up";
+    this.rotationSpeed = "zero";
 
+    var mySpeedScale = 0;
     var myDirection = vec3(0.0, 0.0, 1.0);
     var myTheta = 0;
     var myUp = vec3(0.0, 1.0, 0.0);
-    this.chooseDirection = function() {
+
+    this.chooseDirection = function(center, offset) {
         switch(this.direction) {
             case "up":
                 myDirection = vec3(0.0, 0.0, 1.0);
@@ -187,8 +190,32 @@ var MovementOptions = function() {
                 myUp = vec3(0.0, 1.0, 0.0);
                 break;
             case "side":
-                myDirection = vec3(Math.cos(myTheta), Math.sin(myTheta), 0.0);
                 myUp = vec3(0.0, 0.0, 1.0);
+                if(mySpeedScale == 0) {
+                    L = length(center);
+                    return scalev((L-offset)/L, center);
+                } else {
+                    myDirection = vec3(Math.cos(myTheta), Math.sin(myTheta), 0.0);
+                    myTheta += 0.005*mySpeedScale;
+                }
+        }
+        offsetVector = vec3(scalev(offset, myDirection));
+        return add(center, offsetVector);
+    }
+
+    this.setRotationSpeed = function() {
+        switch(this.rotationSpeed) {
+            case "zero":
+                mySpeedScale = 0;
+                break;
+            case "slow":
+                mySpeedScale = 1;
+                break;
+            case "fast":
+                mySpeedScale = 3;
+                break;
+            case "stationary":
+                mySpeedScale = 3; // I do not know
                 break;
         }
     }
@@ -233,10 +260,8 @@ var MovementOptions = function() {
                 break;
             default:
         }
-        offsetVector = vec3(scalev(offset, myDirection));
-        eye = add(center, offsetVector);     
+        eye = this.chooseDirection(center, offset);
         at = center;
         up = myUp;    
-        myTheta += 1.0;
     }
 }

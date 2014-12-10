@@ -472,8 +472,10 @@ function inverseMatrix(matrix) {
 function render() 
 {
 	// increment date
-	date += 0.10*theTime.getDateScale();
-	
+	if(!theTime.isPaused()) {	
+		date += 0.10*theTime.getDateScale();
+	}
+
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 	// projection matrix
     var  p = perspective( theFovy, theAspect, theZNear, theZFar );
@@ -622,8 +624,13 @@ function drawPlanets(p, mv, colorCode)
 var theTime;
 var TimeOptions = function() {
 	this.speed = 1.0;
+	this.pause = false;
 
 	this.getDateScale = function() {
 		return this.speed;
+	}
+
+	this.isPaused = function() {
+		return this.pause;
 	}
 }
