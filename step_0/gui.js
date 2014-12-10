@@ -36,10 +36,6 @@ function initGUI() {
     guiSysOb.add(theSystemObjects, 'satelliteScale', 5e-7, 5e-5).onChange(function() {
         theSystemObjects.setSatelliteScale();
     });
-    // this.sunScale = 5e-6;
-    // this.planetScale = 1e-4;
-    // this.distanceScale = 2e-7;
-    // this.satelliteScale = 5e-6;
 
 
     // ====================================
@@ -66,7 +62,7 @@ function initGUI() {
     // ====================================
     theMovement = new MovementOptions();
     var guiMovement = theGUI.addFolder('Postion');
-    guiMovement.add(theMovement, 'specificPositions', ['initial', 'all system', 'lateral', 'Sun', 'Moon']).onChange(
+    guiMovement.add(theMovement, 'specificPositions', ['initial', 'all system', 'lateral', 'Sun', 'Moon', 'outside the box']).onChange(
         function(value) {
             theMovement.trackingPlanet = false;
             theMovement.lookAtPosition();

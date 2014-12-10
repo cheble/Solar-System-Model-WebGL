@@ -222,6 +222,11 @@ var MovementOptions = function() {
             case "Moon":
                 this.trackingPlanet = true;
                 break;
+            case 'outside the box':
+                at = vec3(0.0, 0.0, 0.0);
+                up = vec3(0.0, 1.0, 0.0);
+                eye = vec3(0.0, 0.0, 8000.0);
+                break;
         }
     }
 
