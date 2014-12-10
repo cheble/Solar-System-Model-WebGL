@@ -3,9 +3,9 @@
 function initGUI() {
     var theGUI = new dat.GUI();
 
-    // =========================
+    // ====================================
     // Skybox related options
-    // =========================
+    // ====================================
     theSkyboxSource = new SkyboxTextureSource();
     var guiSkybox = theGUI.addFolder('Skybox');
      // Choose from accepted values
@@ -16,9 +16,35 @@ function initGUI() {
     });
 
 
-    // =========================
+    // ====================================
+    // System objects related options
+    // ====================================
+    theSystemObjects = new ScaleOptions();
+    var guiSysOb = theGUI.addFolder('System Objects');
+    guiSysOb.add(theSystemObjects, 'scaleMode', ['real', 'best', 'close orbits', 'huge planets', 'huge Sun']).onChange(function() {
+        theSystemObjects.changeScales();
+    });
+    guiSysOb.add(theSystemObjects, 'sunScale', 5e-7, 5e-5).onChange(function() {
+        theSystemObjects.setSunScale();
+    });
+    guiSysOb.add(theSystemObjects, 'planetScale', 1e-5, 1e-3).onChange(function() {
+        theSystemObjects.setPlanetScale();
+    });
+    guiSysOb.add(theSystemObjects, 'distanceScale', 2e-8, 2e-6).onChange(function() {
+        theSystemObjects.setDistanceScale();
+    });
+    guiSysOb.add(theSystemObjects, 'satelliteScale', 5e-7, 5e-5).onChange(function() {
+        theSystemObjects.setSatelliteScale();
+    });
+    // this.sunScale = 5e-6;
+    // this.planetScale = 1e-4;
+    // this.distanceScale = 2e-7;
+    // this.satelliteScale = 5e-6;
+
+
+    // ====================================
     // Orbits related options
-    // =========================
+    // ====================================
     var guiOrbits = theGUI.addFolder('Orbits');
     guiOrbits.add(theOrbits, 'visible');
     guiOrbits.add(theOrbits, 'orbitSize', 0.5, 3.0);
@@ -26,18 +52,18 @@ function initGUI() {
     guiOrbits.addColor(theOrbits, 'orbitColor');
 
 
-    // =========================
+    // ====================================
     // Time related options
-    // =========================
+    // ====================================
     theTime = new TimeOptions();
     var guiTime = theGUI.addFolder('Time');
     guiTime.add(theTime, 'speed', 0.1/60, 60);
     guiTime.add(theTime, 'pause');
 
 
-    // =========================
-    // Lookat related options
-    // =========================
+    // ====================================
+    // Camera position related options
+    // ====================================
     theMovement = new MovementOptions();
     var guiMovement = theGUI.addFolder('Postion');
     guiMovement.add(theMovement, 'specificPositions', ['initial', 'all system', 'lateral', 'Sun', 'Moon']).onChange(

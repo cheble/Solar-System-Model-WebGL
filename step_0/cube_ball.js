@@ -33,12 +33,64 @@ var ks = 0.5;
 var shininess = 100.0;
 
 // SCALES
-
 var SUN_SCALE = 5e-6;
 var PLANET_SCALE = 1e-4;
 var DIST_SCALE = 2e-7;
 var SAT_DIST_SCALE = 5e-6;
 
+var theSystemObjects;
+var ScaleOptions = function() {
+	this.scaleMode = 'best';
+	this.sunScale = 5e-6;
+	this.planetScale = 1e-4;
+	this.distanceScale = 2e-7;
+	this.satelliteScale = 5e-6;
+
+	this.changeScales = function() {
+		switch(this.scaleMode) {
+			case "best":
+				SUN_SCALE = 5e-6;
+				PLANET_SCALE = 1e-4;
+				DIST_SCALE = 2e-7;
+				SAT_DIST_SCALE = 5e-6;
+				break;
+			case "real":
+				SUN_SCALE = 1;
+				PLANET_SCALE = 1;
+				DIST_SCALE = 1;
+				SAT_DIST_SCALE = 1;
+				break;
+			case "close orbits":
+				DIST_SCALE = 1e-7;
+				SAT_DIST_SCALE = 2.5*1e-6;
+				break;
+			case "huge planets":
+				PLANET_SCALE = 2e-4;
+				SAT_DIST_SCALE = 1e-5;
+				break;
+			case "huge Sun":
+				SUN_SCALE = 1e-5;
+				break;
+		}
+	}
+
+	this.setSunScale = function() {
+		SUN_SCALE = this.sunScale;
+	}
+
+	this.setPlanetScale = function() {
+		PLANET_SCALE = this.planetScale;
+	}
+
+	this.setDistanceScale = function() {
+		DIST_SCALE = this.distanceScale;
+	}
+
+	this.setSatelliteScale = function() {
+		SAT_DIST_SCALE = this.satelliteScale;
+	}
+
+}
 // END SCALES
 
 var CANVAS_SIZE_X = 2048;
