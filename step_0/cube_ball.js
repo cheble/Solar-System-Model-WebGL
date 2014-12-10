@@ -565,7 +565,9 @@ function render()
 	//var cubeScale = scale(10, 10, 10);
 	//drawCube(p, mult(mv, cubeScale));
 	
-	theOrbits.drawOrbits(p, mv);
+	if(theOrbits.visible){
+		theOrbits.drawOrbits(p, mv);
+	}
 	drawPlanets(p, mv);
 	
     requestAnimFrame( render );

@@ -69,7 +69,7 @@ function planetPosition(planet, T){
     
     // eclip coordinates are set so up is z and y is into the screen
     //return vec3(xeclip*AU_TO_KM, yeclip*AU_TO_KM, zeclip*AU_TO_KM);
-    return vec3(xeclip*AU_TO_KM, zeclip*AU_TO_KM, yeclip*AU_TO_KM);
+    return vec3(-xeclip*AU_TO_KM, zeclip*AU_TO_KM, yeclip*AU_TO_KM);
 	
 }
 
