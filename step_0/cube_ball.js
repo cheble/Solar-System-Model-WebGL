@@ -565,8 +565,8 @@ function render()
     drawSkybox(p, mv);
 
 	// drawn for reference
-	var cubeScale = scale(10, 10, 10);
-	drawCube(p, mult(mv, cubeScale));
+	//var cubeScale = scale(10, 10, 10);
+	//drawCube(p, mult(mv, cubeScale));
 	
 	theOrbits.drawOrbits(p, mv);
 	drawPlanets(p, mv);

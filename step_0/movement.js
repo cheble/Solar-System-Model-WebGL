@@ -1,7 +1,7 @@
 
 var at = vec3(0.0, 0.0, 0.0);
-var up = vec3(0.0, 1.0, 0.0);
-var eye = vec3(0.0, 0.0, -256.0);
+var up = vec3(0.0, 0.0, 1.0);
+var eye = vec3(0.0, 256.0, 0.0);
 
 var localForward = calculateLocalForward();
 var localUp = up;
