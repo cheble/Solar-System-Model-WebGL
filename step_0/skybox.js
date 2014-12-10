@@ -144,7 +144,7 @@ function initSkyboxTextures() {
     theSkyboxTextures = gl.createTexture();
     for(var i = 0 ; i < 6 ; i++) {
         theSkyImage[i] = new Image();
-        theSkyImage[i].src = path + theSkyboxSource.getSource()[i];    
+        theSkyImage[i].src = SKYBOX_PATH + theSkyboxSource.getSource()[i];    
         theSkyImage[i].onload = function()  { 
             counter++;
             if(counter == 6) { // call the function only one time: after finish loading the 6 images

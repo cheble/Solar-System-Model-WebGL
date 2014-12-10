@@ -21,12 +21,15 @@ main()
 <script id="cube-fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
 
+#extension GL_EXT_frag_depth : enable
+
 uniform vec4 orbitColor;
 
 void
 main()
 {
 	gl_FragColor = orbitColor;
+	gl_FragDepthEXT = gl_FragCoord.z + 0.0001;
 }
 </script>
 
@@ -104,6 +107,8 @@ uniform float kd;
 uniform float ks;
 uniform float shininess;
 uniform float colorCode;
+uniform mat4 invMV;
+uniform sampler2D texture;
 
 void
 main()
@@ -124,10 +129,27 @@ main()
 
     float x = fPosition.x - fCenter.x;
     float y = fPosition.y - fCenter.y;
-    float z = - sqrt(radius*radius - x * x - y * y);
+    float z = sqrt(radius*radius - x * x - y * y);
 	
-    vec3 norm = normalize(vec3(x, y, z));					// normal vector of the circle
+    vec3 norm = normalize(vec3(x, y, -z));					// normal vector of the circle
+	
+	/* texture parameters */
+    float pi = radians(180.0);
+	
+	vec3 texVec = ( invMV * vec4(fCenter + vec3(x, y, z), 1.0)).xyz;
+	vec3 tempCenter = (invMV * vec4(fCenter, 1.0)).xyz;
+	texVec = texVec - tempCenter; 
+	texVec = normalize(texVec);
 
+    float sCoord = 0.5 + (atan(texVec.x,texVec.z))/(2.0*pi);
+
+    float tCoord = 0.5 - asin(texVec.y)/(pi);
+
+    vec2 texCoord = vec2(sCoord, tCoord);
+	
+	vec4 fColor = texture2D( texture,  texCoord); 
+	/*********************/
+	
 	vec3 LL = normalize(L);
 	vec3 EE = normalize(E);
     
@@ -139,7 +161,6 @@ main()
     
     if( dot(LL, norm) < 0.0 ) specular = 0.0;
 	
-	vec4 fColor = vec4(1.0, 1.0, 1.0, 1.0);
     fColor = fColor * (ambient + diffuse) + vec4(1.0) * specular;
     fColor.a = 1.0;
     
@@ -183,6 +204,7 @@ main()
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="../Util/dat.gui.js"></script>
+<script type="text/javascript" src="resources.js"></script>
 <script type="text/javascript" src="skybox.js"></script>
 <script type="text/javascript" src="gui.js"></script>
 <script type="text/javascript" src="orbit.js"></script>
@@ -191,6 +213,7 @@ main()
 <script type="text/javascript" src="planet_data.js"></script>
 <script type="text/javascript" src="planet_calc.js"></script>
 <script type="text/javascript" src="planet_info.js"></script>
+<script type="text/javascript" src="planet_textures.js"></script>
 <link rel="stylesheet" href="global.css">
 </head>
 

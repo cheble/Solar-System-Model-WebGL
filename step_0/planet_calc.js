@@ -67,7 +67,9 @@ function planetPosition(planet, T){
     var zeclip = ( Math.sin(w)*Math.sin(I) )*x_orbit 
     		   + ( Math.cos(w)*Math.sin(I) )*y_orbit;
     
-    return vec3(xeclip*AU_TO_KM, yeclip*AU_TO_KM, zeclip*AU_TO_KM);
+    // eclip coordinates are set so up is z and y is into the screen
+    //return vec3(xeclip*AU_TO_KM, yeclip*AU_TO_KM, zeclip*AU_TO_KM);
+    return vec3(xeclip*AU_TO_KM, zeclip*AU_TO_KM, yeclip*AU_TO_KM);
 	
 }
 
@@ -131,70 +133,6 @@ function satellitePosition(satellite, T){
 //  console.log("zeclip: " + zeclip + " = "+zeclip*AU_TO_KM+" km");
   
   return vec3(xeclip*AU_TO_KM, yeclip*AU_TO_KM, zeclip*AU_TO_KM);
-	
-	
-	// semi-major axis (AU, AU/century)
-	var a = planet.a + planet.aDelta * T;
-	// eccentricity (, /century)
-	var e = planet.e + planet.eDelta * T;
-	// inclination (degrees, degrees/century)
-	var I = planet.I + planet.IDelta * T;
-	I = normalizeDegree(I) * DEG_TO_RAD;
-	// mean longitude (degrees, degrees/century)
-	var L = planet.L + planet.LDelta * T;
-	L = normalizeDegree(L) * DEG_TO_RAD;
-	// longitude of perihelion (degrees, degrees/century)
-	var p = planet.p + planet.pDelta * T;
-	p = normalizeDegree(p) * DEG_TO_RAD;
-	// longitude of the ascending node (degrees, degrees/century)
-	var n = planet.n + planet.nDelta * T;
-	n = normalizeDegree(n) * DEG_TO_RAD;
-	
-	// argument of perihelion
-	var w = p - n;
-	
-	// mean anomaly
-	var M = L - p;
-	if(planet.b){
-		M = M + planet.b*T*T;
-	}
-	if(planet.c){
-		M = M + planet.c*Math.cos(planet.f*T);
-	}
-	if(planet.s){
-		M = M + planet.s*Math.sin(planet.f*T);
-	}
-	M = normalizeRadians(M);
-	
-	
-	
-	// eccentricity anomaly
-	var E 	= M + e * Math.sin(M);
-	for(var count=0; count<=5; count++){
-		// get better approximation
-		var deltaM = M - (E - e * Math.sin(E));
-		var deltaE = deltaM/(1 - e * Math.cos(E));
-		E = E + deltaE;
-	}
-	
-	//Compute rectangular (x,y) coordinates in the plane of the orbit:
-    var x_orbit = a * (Math.cos(E) - e);
-    var y_orbit = a * Math.sqrt(1 - e*e) * Math.sin(E);
-	
-	//Convert to distance and true anomaly:
-    //var r = Math.sqrt(x_orbit*x_orbit + y_orbit*y_orbit);
-    //var v = Math.atan2( y_orbit, x_orbit );
-    
-    var xeclip = ( Math.cos(w)*Math.cos(n) - Math.sin(w)*Math.sin(n)*Math.cos(I) )*x_orbit 
-    		   + (-Math.sin(w)*Math.cos(n) - Math.cos(w)*Math.sin(n)*Math.cos(I) )*y_orbit;
-    
-    var yeclip = ( Math.cos(w)*Math.sin(n) + Math.sin(w)*Math.cos(n)*Math.cos(I) )*x_orbit 
-    		   + (-Math.sin(w)*Math.sin(n) + Math.cos(w)*Math.cos(n)*Math.cos(I) )*y_orbit;
-    
-    var zeclip = ( Math.sin(w)*Math.sin(I) )*x_orbit 
-    		   + ( Math.cos(w)*Math.sin(I) )*y_orbit;
-    
-    return vec3(xeclip*AU_TO_KM, yeclip*AU_TO_KM, zeclip*AU_TO_KM);
 	
 }
 

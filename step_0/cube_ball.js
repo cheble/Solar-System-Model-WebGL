@@ -27,8 +27,8 @@ var theInit = true;
 var date = -3543.0;
 
 var lightPosition = vec4(0.0, 0.0, 0.0, 1.0 );
-var ka = 0.1;
-var kd = 0.5;
+var ka = 0.3;
+var kd = 0.7;
 var ks = 0.5;
 var shininess = 100.0;
 
@@ -320,7 +320,7 @@ function initSphere()
     gl.bufferData(gl.ARRAY_BUFFER, flatten(theSpherePoints), gl.STATIC_DRAW);
 }
 
-function drawSphere(p, mv, center, radius, luminous, colorCode) 
+function drawSphere(p, mv, invMV, center, radius, luminous, colorCode) 
 {
     gl.useProgram(theSphereProgram);
 	
@@ -328,6 +328,8 @@ function drawSphere(p, mv, center, radius, luminous, colorCode)
 	 
 	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "modelViewMatrix"),false, flatten(mv));
 
+    gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "invMV"),false, flatten(invMV));
+    
 	if(colorCode){
 		var code = colorCode/256.0;
 		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "colorCode"), code);
@@ -358,6 +360,8 @@ function drawSphere(p, mv, center, radius, luminous, colorCode)
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
     
+    usePlanetTexture(theSphereProgram);
+    
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
 
@@ -386,8 +390,9 @@ window.onload = function init()
 	theAspect = canvas.width * 1.0 / canvas.height;
 
 	// init frame buffer
+	loadPlanetTexture();
+    //initTextures();
 	initFrameBuffer();
-	
 	theOrbits = new Orbit();	// already call the init
 	initGUI();
     initSkyboxTextures();
@@ -488,33 +493,52 @@ window.onload = function init()
     canvas.addEventListener("contextmenu", function(e) {return false;});
 };
 
-function inverseMatrix(matrix) {
-	  var r = [];
-	  var m = flatten(matrix);
+function inverseMatrix(mat) {
+	dest = mat4();
+	
+    var a11 = mat[0][0], a12 = mat[0][1], a13 = mat[0][2], a14 = mat[0][3];
+    var a21 = mat[1][0], a22 = mat[1][1], a23 = mat[1][2], a24 = mat[1][3];
+    var a31 = mat[2][0], a32 = mat[2][1], a33 = mat[2][2], a34 = mat[2][3];
+    var a41 = mat[3][0], a42 = mat[3][1], a43 = mat[3][2], a44 = mat[3][3];
 
-	  r[0] = m[5]*m[10]*m[15] - m[5]*m[14]*m[11] - m[6]*m[9]*m[15] + m[6]*m[13]*m[11] + m[7]*m[9]*m[14] - m[7]*m[13]*m[10];
-	  r[1] = -m[1]*m[10]*m[15] + m[1]*m[14]*m[11] + m[2]*m[9]*m[15] - m[2]*m[13]*m[11] - m[3]*m[9]*m[14] + m[3]*m[13]*m[10];
-	  r[2] = m[1]*m[6]*m[15] - m[1]*m[14]*m[7] - m[2]*m[5]*m[15] + m[2]*m[13]*m[7] + m[3]*m[5]*m[14] - m[3]*m[13]*m[6];
-	  r[3] = -m[1]*m[6]*m[11] + m[1]*m[10]*m[7] + m[2]*m[5]*m[11] - m[2]*m[9]*m[7] - m[3]*m[5]*m[10] + m[3]*m[9]*m[6];
+    var d = a11*a22*a33*a44 + a11*a23*a34*a42 + a11*a24*a32*a43;
+    d    += a12*a21*a34*a43 + a12*a23*a31*a44 + a12*a24*a33*a41;
+    d    += a13*a21*a32*a44 + a13*a22*a34*a41 + a13*a24*a31*a42;
+    d    += a14*a21*a33*a42 + a14*a22*a31*a43 + a14*a23*a32*a41;
+    d    -= a11*a22*a34*a43 + a11*a23*a32*a44 + a11*a24*a33*a42;
+    d    -= a12*a21*a33*a44 + a12*a23*a34*a41 + a12*a24*a31*a43;
+    d    -= a13*a21*a34*a42 + a13*a22*a31*a44 + a13*a24*a32*a41;
+    d    -= a14*a21*a32*a43 + a14*a22*a33*a41 + a14*a23*a31*a42;
+	
+	if (d == 0.0) { return console.log("no inverse"); null; }
+	var id = 1/d;
+	
+	
+	dest[0][0] = id*(a22*a33*a44 + a23*a34*a42 + a24*a32*a43 - a22*a34*a43 - a23*a32*a44 - a24*a33*a42);
+	dest[0][1] = id*(a12*a34*a43 + a13*a32*a44 + a14*a33*a42 - a12*a33*a44 - a13*a34*a42 - a14*a32*a43);
+	dest[0][2] = id*(a12*a23*a44 + a13*a24*a42 + a14*a22*a43 - a12*a24*a43 - a13*a22*a44 - a14*a23*a42);
+	dest[0][3] = id*(a12*a24*a33 + a13*a22*a34 + a14*a23*a32 - a12*a23*a34 - a13*a24*a32 - a14*a22*a33);
 
-	  r[4] = -m[4]*m[10]*m[15] + m[4]*m[14]*m[11] + m[6]*m[8]*m[15] - m[6]*m[12]*m[11] - m[7]*m[8]*m[14] + m[7]*m[12]*m[10];
-	  r[5] = m[0]*m[10]*m[15] - m[0]*m[14]*m[11] - m[2]*m[8]*m[15] + m[2]*m[12]*m[11] + m[3]*m[8]*m[14] - m[3]*m[12]*m[10];
-	  r[6] = -m[0]*m[6]*m[15] + m[0]*m[14]*m[7] + m[2]*m[4]*m[15] - m[2]*m[12]*m[7] - m[3]*m[4]*m[14] + m[3]*m[12]*m[6];
-	  r[7] = m[0]*m[6]*m[11] - m[0]*m[10]*m[7] - m[2]*m[4]*m[11] + m[2]*m[8]*m[7] + m[3]*m[4]*m[10] - m[3]*m[8]*m[6];
+	dest[1][0] = id*(a21*a34*a43 + a23*a31*a44 + a24*a33*a41 - a21*a33*a44 - a23*a34*a41 - a24*a31*a43);
+	dest[1][1] = id*(a11*a33*a44 + a13*a34*a41 + a14*a31*a43 - a11*a34*a43 - a13*a31*a44 - a14*a33*a41);
+	dest[1][2] = id*(a11*a24*a43 + a13*a21*a44 + a14*a23*a41 - a11*a23*a44 - a13*a24*a41 - a14*a21*a43);
+	dest[1][3] = id*(a11*a23*a34 + a13*a24*a31 + a14*a21*a33 - a11*a24*a33 - a13*a21*a34 - a14*a23*a31);
 
-	  r[8] = m[4]*m[9]*m[15] - m[4]*m[13]*m[11] - m[5]*m[8]*m[15] + m[5]*m[12]*m[11] + m[7]*m[8]*m[13] - m[7]*m[12]*m[9];
-	  r[9] = -m[0]*m[9]*m[15] + m[0]*m[13]*m[11] + m[1]*m[8]*m[15] - m[1]*m[12]*m[11] - m[3]*m[8]*m[13] + m[3]*m[12]*m[9];
-	  r[10] = m[0]*m[5]*m[15] - m[0]*m[13]*m[7] - m[1]*m[4]*m[15] + m[1]*m[12]*m[7] + m[3]*m[4]*m[13] - m[3]*m[12]*m[5];
-	  r[11] = -m[0]*m[5]*m[11] + m[0]*m[9]*m[7] + m[1]*m[4]*m[11] - m[1]*m[8]*m[7] - m[3]*m[4]*m[9] + m[3]*m[8]*m[5];
+	dest[2][0] = id*(a21*a32*a44 + a22*a34*a41 + a24*a31*a42 - a21*a34*a42 - a22*a31*a44 - a24*a32*a41);
+	dest[2][1] = id*(a11*a34*a42 + a12*a31*a44 + a14*a32*a41 - a11*a32*a44 - a12*a34*a41 - a14*a31*a42);
+	dest[2][2] = id*(a11*a22*a44 + a12*a24*a41 + a14*a21*a42 - a11*a24*a42 - a12*a21*a44 - a14*a22*a41);
+	dest[2][3] = id*(a11*a24*a32 + a12*a21*a34 + a14*a22*a31 - a11*a22*a34 - a12*a24*a31 - a14*a21*a32);
 
-	  r[12] = -m[4]*m[9]*m[14] + m[4]*m[13]*m[10] + m[5]*m[8]*m[14] - m[5]*m[12]*m[10] - m[6]*m[8]*m[13] + m[6]*m[12]*m[9];
-	  r[13] = m[0]*m[9]*m[14] - m[0]*m[13]*m[10] - m[1]*m[8]*m[14] + m[1]*m[12]*m[10] + m[2]*m[8]*m[13] - m[2]*m[12]*m[9];
-	  r[14] = -m[0]*m[5]*m[14] + m[0]*m[13]*m[6] + m[1]*m[4]*m[14] - m[1]*m[12]*m[6] - m[2]*m[4]*m[13] + m[2]*m[12]*m[5];
-	  r[15] = m[0]*m[5]*m[10] - m[0]*m[9]*m[6] - m[1]*m[4]*m[10] + m[1]*m[8]*m[6] + m[2]*m[4]*m[9] - m[2]*m[8]*m[5];
-
-	  var det = m[0]*r[0] + m[1]*r[4] + m[2]*r[8] + m[3]*r[12];
-	  for (var i = 0; i < 16; i++) r[i] /= det;
-	  return mat4(result);
+	dest[3][0] = id*(a21*a33*a42 + a22*a31*a43 + a23*a32*a41 - a21*a32*a43 - a22*a33*a41 - a23*a31*a42);
+	dest[3][1] = id*(a11*a32*a43 + a12*a33*a41 + a13*a31*a42 - a11*a33*a42 - a12*a31*a43 - a13*a32*a41);
+	dest[3][2] = id*(a11*a23*a42 + a12*a21*a43 + a13*a22*a41 - a11*a22*a43 - a12*a23*a41 - a13*a21*a42);
+	dest[3][3] = id*(a11*a22*a33 + a12*a23*a31 + a13*a21*a32 - a11*a23*a32 - a12*a21*a33 - a13*a22*a31);
+	
+	if(dest[0]){
+		
+	}
+	
+	return dest;
 };
 
 
@@ -541,9 +565,9 @@ function render()
     drawSkybox(p, mv);
 
 	// drawn for reference
-	//var cubeScale = scale(10, 10, 10);
-	//drawCube(p, mult(mv, cubeScale));
-
+	var cubeScale = scale(10, 10, 10);
+	drawCube(p, mult(mv, cubeScale));
+	
 	theOrbits.drawOrbits(p, mv);
 	drawPlanets(p, mv);
 	
@@ -553,23 +577,25 @@ function render()
 function drawPlanets(p, mv, colorCode)
 {
 	// TODO if colorCode: call drawSphere with a color code and ignore lighting in shader
-	
+
+	var invMV = inverseMatrix(mv);
+    
 	// *** Sun ***
 	var center = vec4(0.0, 0.0, 0.0, 1.0);
 	var radius = SUN.radius * SUN_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, SUN.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, SUN.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, true);
+		drawSphere(p, mv, invMV, center, radius, true);
 	}
 	
 	// *** Mercury ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(MERCURY, date/36525.0)), 1.0 );
 	radius = MERCURY.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, MERCURY.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, MERCURY.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -578,9 +604,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(VENUS, date/36525.0)), 1.0 );
 	radius = VENUS.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, VENUS.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, VENUS.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -589,9 +615,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)), 1.0 );
 	radius = EARTH.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, EARTH.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, EARTH.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -600,9 +626,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( add(vec3(center), scalev(SAT_DIST_SCALE, planetPosition(MOON, date/36525.0))), 1.0 );
 	radius = MOON.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, MOON.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, MOON.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -611,9 +637,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(MARS, date/36525.0)), 1.0 );
 	radius = MARS.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, MARS.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, MARS.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -622,9 +648,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(JUPITER, date/36525.0)), 1.0 );
 	radius = JUPITER.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, JUPITER.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, JUPITER.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 
@@ -632,9 +658,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(SATURN, date/36525.0)), 1.0 );
 	radius = SATURN.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, SATURN.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, SATURN.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -643,9 +669,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(URANUS, date/36525.0)), 1.0 );
 	radius = URANUS.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, URANUS.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, URANUS.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -654,9 +680,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(NEPTUNE, date/36525.0)), 1.0 );
 	radius = NEPTUNE.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, NEPTUNE.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, NEPTUNE.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -665,9 +691,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(PLUTO, date/36525.0)), 1.0 );
 	radius = PLUTO.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, center, radius, false, PLUTO.colorCode);
+		drawSphere(p, mv, invMV, center, radius, false, PLUTO.colorCode);
 	}else{
-		drawSphere(p, mv, center, radius, false);
+		drawSphere(p, mv, invMV, center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
