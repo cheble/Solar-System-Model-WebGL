@@ -201,18 +201,18 @@ var MovementOptions = function() {
         switch(this.specificPositions) {
             case "initial":
                 at = vec3(0.0, 0.0, 0.0);
-                up = vec3(0.0, 1.0, 0.0);
-                eye = vec3(0.0, 0.0, -256.0);
+                up = vec3(0.0, 0.0, 1.0);
+                eye = vec3(0.0, 256.0, 0.0);
                 break;
             case "all system":
-                at = vec3(0.0, -200.0, 0.0);
-                up = vec3(0.0, 1.0, 0.0);
-                eye = vec3(0.0, 300.0, -1800.0);
+                at = vec3(0.0, 0.0, 0.0);
+                up = vec3(0.0, 0.0, 1.0);
+                eye = vec3(0.0, 2400.0, 0.0);
                 break;
             case "lateral":
                 at = vec3(0.0, 0.0, 0.0);
-                up = vec3(0.0, 1.0, 0.0);
-                eye = vec3(-2400.0, 0.0, 0.0);
+                up = vec3(0.0, 0.0, 1.0);
+                eye = vec3(2400.0, 0.0, 0.0);
                 break;
             case "Sun":
                 at = vec3(0.0, 0.0, 0.0);
@@ -233,15 +233,15 @@ var MovementOptions = function() {
     this.chooseDirection = function(center, offset) {
         switch(this.direction) {
             case "up":
-                myDirection = vec3(0.0, 0.0, 1.0);
-                myUp = vec3(0.0, 1.0, 0.0);
+                myDirection = vec3(0.0, 1.0, 0.0);
+                myUp = vec3(0.0, 0.0, 1.0);
                 break;
             case "down":
-                myDirection = vec3(0.0, 0.0, -1.0);
-                myUp = vec3(0.0, 1.0, 0.0);
+                myDirection = vec3(0.0, -1.0, 0.0);
+                myUp = vec3(0.0, 0.0, 1.0);
                 break;
             case "side":
-                myUp = vec3(0.0, 0.0, 1.0);
+                myUp = vec3(0.0, 1.0, 0.0);
                 if(mySpeedScale == 0) {
                     L = length(center);
                     if (this.rotationSpeed == 'day')
@@ -249,7 +249,7 @@ var MovementOptions = function() {
                     if (this.rotationSpeed == 'night')
                         return scalev((L+offset)/L, center);
                 } else {
-                    myDirection = vec3(Math.cos(myTheta), Math.sin(myTheta), 0.0);
+                    myDirection = vec3(Math.cos(myTheta), 0.0, Math.sin(myTheta));
                     myTheta += 0.005*mySpeedScale;
                 }
         }
@@ -266,7 +266,7 @@ var MovementOptions = function() {
                 mySpeedScale = 3;
                 break;
             case "stationary":
-                mySpeedScale = 3; // I do not know
+                mySpeedScale = 0.005; // I do not know
                 break;
             default:
                 mySpeedScale = 0;
