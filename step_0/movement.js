@@ -16,6 +16,7 @@ var fowardKey = false;
 var rightKey = false;
 var leftKey = false;
 var backKey = false;
+var spaceKey = false;
 
 function rotateCamera() {
     /* rotate localForward in the UpDown direction */
@@ -60,6 +61,11 @@ function keyUp(key){
     if(key == 83) {
         backKey = false;
     }
+
+    //released 'space' = goodbye turbo :-(
+    if(key == 32) {
+        spaceKey = false;
+    }
 }
 
 function keyDown(key){
@@ -78,6 +84,11 @@ function keyDown(key){
     //pressed 's'
     if(key == 83) {
         backKey = true;
+    }
+
+    //pressed 'space' = turbo   \o - iiihul!! 
+    if(key == 32) {
+        spaceKey = true;
     }
 }
 
@@ -106,6 +117,12 @@ function translateCamera() {
         eye = add(eye, scalev(-1.0*speed, localForward));
         at = add(at, scalev(-1.0*speed, localForward));
         moved = true;
+    }
+    // TURBOOOO
+    if(spaceKey) {
+        speed = 10.0;
+    } else {
+        speed = 1.0;
     }
     if(moved) {
         theUpDownQuat = vec4(1.0, 0.0, 0.0, 0.0);
@@ -172,12 +189,41 @@ var MovementOptions = function() {
     this.trackingPlanet = false;
     this.followPlanet = " -- ";
     this.direction = "up";
-    this.rotationSpeed = "zero";
+    this.rotationSpeed = "day";
+    this.specificPositions = "initial";
 
     var mySpeedScale = 0;
     var myDirection = vec3(0.0, 0.0, 1.0);
     var myTheta = 0;
     var myUp = vec3(0.0, 1.0, 0.0);
+
+    this.lookAtPosition = function() {
+        switch(this.specificPositions) {
+            case "initial":
+                at = vec3(0.0, 0.0, 0.0);
+                up = vec3(0.0, 1.0, 0.0);
+                eye = vec3(0.0, 0.0, -256.0);
+                break;
+            case "all system":
+                at = vec3(0.0, -200.0, 0.0);
+                up = vec3(0.0, 1.0, 0.0);
+                eye = vec3(0.0, 300.0, -1800.0);
+                break;
+            case "lateral":
+                at = vec3(0.0, 0.0, 0.0);
+                up = vec3(0.0, 1.0, 0.0);
+                eye = vec3(-2400.0, 0.0, 0.0);
+                break;
+            case "Sun":
+                at = vec3(0.0, 0.0, 0.0);
+                up = vec3(0.0, 1.0, 0.0);
+                eye = vec3(0.0, 0.0, -50.0);
+                break;
+            case "Moon":
+                this.trackingPlanet = true;
+                break;
+        }
+    }
 
     this.chooseDirection = function(center, offset) {
         switch(this.direction) {
@@ -193,7 +239,10 @@ var MovementOptions = function() {
                 myUp = vec3(0.0, 0.0, 1.0);
                 if(mySpeedScale == 0) {
                     L = length(center);
-                    return scalev((L-offset)/L, center);
+                    if (this.rotationSpeed == 'day')
+                        return scalev((L-offset)/L, center);
+                    if (this.rotationSpeed == 'night')
+                        return scalev((L+offset)/L, center);
                 } else {
                     myDirection = vec3(Math.cos(myTheta), Math.sin(myTheta), 0.0);
                     myTheta += 0.005*mySpeedScale;
@@ -205,9 +254,6 @@ var MovementOptions = function() {
 
     this.setRotationSpeed = function() {
         switch(this.rotationSpeed) {
-            case "zero":
-                mySpeedScale = 0;
-                break;
             case "slow":
                 mySpeedScale = 1;
                 break;
@@ -217,6 +263,8 @@ var MovementOptions = function() {
             case "stationary":
                 mySpeedScale = 3; // I do not know
                 break;
+            default:
+                mySpeedScale = 0;
         }
     }
 
@@ -259,6 +307,9 @@ var MovementOptions = function() {
                 offset = 20 * PLUTO.radius * PLANET_SCALE;
                 break;
             default:
+                center = vec3( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)));
+                center = add(center,(scalev(SAT_DIST_SCALE, planetPosition(MOON, date/36525.0))));
+                offset = 8 * MOON.radius * PLANET_SCALE;
         }
         eye = this.chooseDirection(center, offset);
         at = center;

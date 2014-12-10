@@ -36,10 +36,15 @@ function initGUI() {
 
 
     // =========================
-    // Movement related options
+    // Lookat related options
     // =========================
     theMovement = new MovementOptions();
-    var guiMovement = theGUI.addFolder('Movement');
+    var guiMovement = theGUI.addFolder('Postion');
+    guiMovement.add(theMovement, 'specificPositions', ['initial', 'all system', 'lateral', 'Sun', 'Moon']).onChange(
+        function(value) {
+            theMovement.trackingPlanet = false;
+            theMovement.lookAtPosition();
+    });
     guiMovement.add(theMovement, 'followPlanet', [" -- ", 'Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto']).onChange(
         function(value) {
             if(theMovement.followPlanet == " -- ") {
@@ -49,7 +54,8 @@ function initGUI() {
             }
     });
     guiMovement.add(theMovement, 'direction', ['up', 'side', 'down']);
-    guiMovement.add(theMovement, 'rotationSpeed', ['zero', 'slow', 'fast', 'stationary']).onChange(function() {
+    var guiMovSpeed = guiMovement.addFolder('Side Vision');
+    guiMovSpeed.add(theMovement, 'rotationSpeed', ['day', 'night', 'slow', 'fast', 'stationary']).onChange(function() {
         theMovement.setRotationSpeed();
     });
 }
