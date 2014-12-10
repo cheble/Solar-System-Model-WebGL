@@ -322,7 +322,6 @@ function initSphere()
 
 function drawSphere(p, mv, invMV, center, radius, luminous, colorCode) 
 {
-    gl.useProgram(theSphereProgram);
 	
 	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "projectionMatrix"),false, flatten(p));
 	 
@@ -359,8 +358,6 @@ function drawSphere(p, mv, invMV, center, radius, luminous, colorCode)
     gl.bindBuffer(gl.ARRAY_BUFFER, theSphereVBOPoints);
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
-    
-    usePlanetTexture(theSphereProgram);
     
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
@@ -400,7 +397,7 @@ window.onload = function init()
 	initCube();
 	initSphere();
 	
-    render();
+    //render();
     
     canvas.addEventListener("mousedown", function(e){
  		var pos = getMousePos(e, this);
@@ -576,10 +573,14 @@ function render()
 
 function drawPlanets(p, mv, colorCode)
 {
-	// TODO if colorCode: call drawSphere with a color code and ignore lighting in shader
-
+	gl.useProgram(theSphereProgram);
+	
 	var invMV = inverseMatrix(mv);
     
+	
+	
+	
+	usePlanetTexture(theSphereProgram, sunTexture);
 	// *** Sun ***
 	var center = vec4(0.0, 0.0, 0.0, 1.0);
 	var radius = SUN.radius * SUN_SCALE;
@@ -588,7 +589,8 @@ function drawPlanets(p, mv, colorCode)
 	}else{
 		drawSphere(p, mv, invMV, center, radius, true);
 	}
-	
+
+	usePlanetTexture(theSphereProgram, mercuryTexture);
 	// *** Mercury ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(MERCURY, date/36525.0)), 1.0 );
 	radius = MERCURY.radius * PLANET_SCALE;
@@ -599,7 +601,8 @@ function drawPlanets(p, mv, colorCode)
 		theOrbits.addOrbitPos(center);
 	}
 	
-	
+
+	usePlanetTexture(theSphereProgram, venusTexture);
 	// *** Venus ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(VENUS, date/36525.0)), 1.0 );
 	radius = VENUS.radius * PLANET_SCALE;
@@ -611,6 +614,7 @@ function drawPlanets(p, mv, colorCode)
 	}
 	
 
+	usePlanetTexture(theSphereProgram, earthTexture);
 	// *** Earth ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)), 1.0 );
 	radius = EARTH.radius * PLANET_SCALE;
@@ -621,7 +625,8 @@ function drawPlanets(p, mv, colorCode)
 		theOrbits.addOrbitPos(center);
 	}
 	
-	
+
+	usePlanetTexture(theSphereProgram, earthTexture);
 	// *** Moon ***
 	center = vec4( add(vec3(center), scalev(SAT_DIST_SCALE, planetPosition(MOON, date/36525.0))), 1.0 );
 	radius = MOON.radius * PLANET_SCALE;
@@ -633,6 +638,7 @@ function drawPlanets(p, mv, colorCode)
 	}
 	
 
+	usePlanetTexture(theSphereProgram, marsTexture);
 	// *** Mars ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(MARS, date/36525.0)), 1.0 );
 	radius = MARS.radius * PLANET_SCALE;
@@ -644,6 +650,7 @@ function drawPlanets(p, mv, colorCode)
 	}
 	
 
+	usePlanetTexture(theSphereProgram, jupiterTexture);
 	// *** Jupiter ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(JUPITER, date/36525.0)), 1.0 );
 	radius = JUPITER.radius * PLANET_SCALE;
@@ -654,6 +661,7 @@ function drawPlanets(p, mv, colorCode)
 		theOrbits.addOrbitPos(center);
 	}
 
+	usePlanetTexture(theSphereProgram, saturnTexture);
 	// *** Saturn ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(SATURN, date/36525.0)), 1.0 );
 	radius = SATURN.radius * PLANET_SCALE;
@@ -665,6 +673,7 @@ function drawPlanets(p, mv, colorCode)
 	}
 	
 
+	usePlanetTexture(theSphereProgram, uranusTexture);
 	// *** Uranus ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(URANUS, date/36525.0)), 1.0 );
 	radius = URANUS.radius * PLANET_SCALE;
@@ -676,6 +685,7 @@ function drawPlanets(p, mv, colorCode)
 	}
 	
 
+	usePlanetTexture(theSphereProgram, neptuneTexture);
 	// *** Neptune ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(NEPTUNE, date/36525.0)), 1.0 );
 	radius = NEPTUNE.radius * PLANET_SCALE;
@@ -687,6 +697,7 @@ function drawPlanets(p, mv, colorCode)
 	}
 	
 
+	usePlanetTexture(theSphereProgram, plutoTexture);
 	// *** Pluto ***
 	center = vec4( scalev(DIST_SCALE, planetPosition(PLUTO, date/36525.0)), 1.0 );
 	radius = PLUTO.radius * PLANET_SCALE;
