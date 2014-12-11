@@ -221,6 +221,7 @@ var MovementOptions = function() {
                 break;
             case "Moon":
                 this.trackingPlanet = true;
+                this.followPlanet = "Moon";
                 break;
             case 'outside the box':
                 at = vec3(0.0, 0.0, 0.0);
@@ -311,10 +312,11 @@ var MovementOptions = function() {
                 center = vec3( scalev(DIST_SCALE, planetPosition(PLUTO, date/36525.0)));
                 offset = 20 * PLUTO.radius * PLANET_SCALE;
                 break;
-            default:
+            case "Moon":
                 center = vec3( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)));
                 center = add(center,(scalev(SAT_DIST_SCALE, planetPosition(MOON, date/36525.0))));
                 offset = 8 * MOON.radius * PLANET_SCALE;
+                break;
         }
         eye = this.chooseDirection(center, offset);
         at = center;
