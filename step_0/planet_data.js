@@ -4,12 +4,17 @@
 
 var SUN = {
 		name:"Sun",									// planet name
+		info:"The Sun (Star)<br>Center of Earth's Solar System<br>Radius: 696000 km",
 		radius:696000.0,							// volumetric mean radius (km)
-		colorCode:100
+		colorCode:100,
+		o:7.25,
+		r:14.1843971631,
+		I:0.0
 			};
 
 var MERCURY = {
 		name:"Mercury",								// planet name
+		info:"Mercury (Planet)<br>Closest Planet To The Sun<br>Radius: 2439.7 km",
 		radius:2439.7,								// volumetric mean radius (km)
 		colorCode:101,
 		o:0.034,									// Obliquity to orbit (degrees)
@@ -24,6 +29,7 @@ var MERCURY = {
 
 var VENUS = {
 		name:"Venus",
+		info:"Venus (Planet)<br>2nd Planet From The Sun<br>Radius: 6051.8 km",
 		radius:6051.8,
 		colorCode:102,
 		o:177.36,
@@ -39,6 +45,7 @@ var VENUS = {
 // TODO: This is actually the Earth-Moon Barycenter (the center of the Earth-Moon body) orbit
 var EARTH = {
 		name:"Earth",
+		info:"Earth (Planet)<br>3rd Planet From The Sun<br>Radius: 6371.0 km",
 		radius:6371.0,
 		colorCode:103,
 		o:23.44,
@@ -53,6 +60,7 @@ var EARTH = {
 
 var MARS = {
 		name:"Mars",
+		info:"Mars (Planet)<br>4th Planet From The Sun<br>Radius: 3389.5 km",
 		radius:3389.5,
 		colorCode:104,
 		o:25.19,
@@ -67,6 +75,7 @@ var MARS = {
 
 var JUPITER = {
 		name:"Jupiter",
+		info:"Jupiter (Planet)<br>5nd Planet From The Sun<br>Radius: 69911 km",
 		radius:69911,
 		colorCode:105,
 		o:3.13,
@@ -85,6 +94,7 @@ var JUPITER = {
 
 var SATURN = {
 		name:"Saturn",
+		info:"Saturn (Planet)<br>6th Planet From The Sun<br>Radius: 58232 km",
 		radius:58232,
 		colorCode:106,
 		o:26.73,
@@ -103,6 +113,7 @@ var SATURN = {
 
 var URANUS = {
 		name:"Uranus",
+		info:"Uranus (Planet)<br>7nd Planet From The Sun<br>Radius: 25362 km",
 		radius:25362,
 		colorCode:107,
 		o:97.77,
@@ -121,6 +132,7 @@ var URANUS = {
 
 var NEPTUNE = {
 		name:"Neptune",
+		info:"Neptune (Planet)<br>8th Planet From The Sun<br>Radius: 24622 km",
 		radius:24622,
 		colorCode:108,
 		o:28.32,
@@ -139,6 +151,7 @@ var NEPTUNE = {
 
 var PLUTO = {
 		name:"Pluto",
+		info:"Pluto (Dwarf Planet)<br>9th Major Body From The Sun<br>Radius: 1195 km",
 		radius:1195,
 		colorCode:109,
 		o:122.53,
@@ -171,6 +184,7 @@ Pnode = 18.600		(longitude of the ascending node precession period)
 
 var MOON = {
 		name:"Moon",
+		info:"Moon (Natural Satellite)<br>Earth's only moon<br>Radius: 1737.1 km",
 		radius:1737.1,
 		colorCode:110,
 		o:6.68,

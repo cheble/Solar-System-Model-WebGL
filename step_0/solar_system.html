@@ -113,6 +113,7 @@ uniform float ks;
 uniform float shininess;
 uniform float colorCode;
 uniform mat4 invMV;
+uniform bool useLighting;
 uniform sampler2D texture;
 
 void
@@ -154,6 +155,11 @@ main()
 	
 	vec4 fColor = texture2D( texture,  texCoord); 
 	/*********************/
+
+	if(!useLighting){
+		gl_FragColor = fColor;
+		return;
+	}
 	
 	vec3 LL = normalize(L);
 	vec3 EE = normalize(E);
@@ -229,8 +235,15 @@ main()
 <canvas id="gl-canvas" width="2048" height="1024">
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
-<div id="info">
-	
+<div class="dg ac">
+	<div class="infoBox">
+		<div class="info">
+			<b>Planet Info:</b>
+		</div>
+		<div class="info" id="info">
+			Click on a planet to view information.
+		</div>
+	</div>
 </div>
 </body>
 </html>

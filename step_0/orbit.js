@@ -24,10 +24,12 @@ var Orbit = function() {
 
 	// this function should be called to every planet/satellite moving on the system
 	this.addOrbitPos = function( pos ) {
-		if(this.Points.length >= this.orbitLength) {
-            theOrbits.Points.splice(0, theOrbits.Points.length - theOrbits.orbitLength);
+		if(!theTime.isPaused()) {	
+			if(this.Points.length >= this.orbitLength) {
+	            theOrbits.Points.splice(0, theOrbits.Points.length - theOrbits.orbitLength);
+			}
+			this.Points.push(pos);
 		}
-		this.Points.push(pos)
 	}
 
 	var webglColor;		// we only need this variable because dat.GUI library has a bug

@@ -47,11 +47,10 @@ function getPlanet(x, y){
 	}
 	
 	if(body && body.name){
-		document.getElementById("info").innerHTML = body.name + "     at (" + x + ", " + y + ")";
-		console.log("Planet Info: " + body.name);
+		document.getElementById("info").style.visibility = "visible";
+		document.getElementById("info").innerHTML = body.info;
 	} else {
-		console.log("No Planet Info: " + code);
-		document.getElementById("info").innerHTML = "No Planet Info     at (" + x + ", " + y + ")";
+		document.getElementById("info").innerHTML = "Click on a planet to view information.";
 	}
 	
 	gl.bindFramebuffer(gl.FRAMEBUFFER, null);

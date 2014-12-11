@@ -248,7 +248,7 @@ function initSphere()
     gl.bufferData(gl.ARRAY_BUFFER, flatten(theSpherePoints), gl.STATIC_DRAW);
 }
 
-function drawSphere(p, mv, invMV, center, radius, luminous, colorCode) 
+function drawSphere(p, mv, invMV, center, radius, useLighting, colorCode) 
 {
 	
 	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "projectionMatrix"),false, flatten(p));
@@ -264,11 +264,9 @@ function drawSphere(p, mv, invMV, center, radius, luminous, colorCode)
 		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "colorCode"), 0.0);
 	}
 	
-	if(luminous){
-		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), 0.9);
-	} else {
-		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), ka);
-	}
+	gl.uniform1i(gl.getUniformLocation(theSphereProgram, "useLighting"), useLighting);
+	
+	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), ka);
 	
     gl.uniform1f( gl.getUniformLocation(theSphereProgram, "kd"), kd);
     
@@ -434,7 +432,7 @@ function inverseMatrix(mat) {
     d    -= a13*a21*a34*a42 + a13*a22*a31*a44 + a13*a24*a32*a41;
     d    -= a14*a21*a32*a43 + a14*a22*a33*a41 + a14*a23*a31*a42;
 	
-	if (d == 0.0) { return console.log("no inverse"); null; }
+	if (d == 0.0) { console.log("no inverse"); return dest; }
 	var id = 1/d;
 	
 	
@@ -457,10 +455,6 @@ function inverseMatrix(mat) {
 	dest[3][1] = id*(a11*a32*a43 + a12*a33*a41 + a13*a31*a42 - a11*a33*a42 - a12*a31*a43 - a13*a32*a41);
 	dest[3][2] = id*(a11*a23*a42 + a12*a21*a43 + a13*a22*a41 - a11*a22*a43 - a12*a23*a41 - a13*a21*a42);
 	dest[3][3] = id*(a11*a22*a33 + a12*a23*a31 + a13*a21*a32 - a11*a23*a32 - a12*a21*a33 - a13*a22*a31);
-	
-	if(dest[0]){
-		
-	}
 	
 	return dest;
 };
@@ -505,7 +499,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, SUN.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, SUN, date), center, radius, true);
+		drawSphere(p, mv, applyAxisTilt(invMV, SUN, date), center, radius, false);
 	}
 
 	// *** Mercury ***
@@ -515,7 +509,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MERCURY.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, MERCURY, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, MERCURY, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -527,7 +521,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, VENUS.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, VENUS, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, VENUS, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -539,7 +533,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, EARTH.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, EARTH, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, EARTH, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -551,7 +545,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MOON.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, MOON, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, MOON, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -563,7 +557,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MARS.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, MARS, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, MARS, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -575,7 +569,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, JUPITER.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, JUPITER, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, JUPITER, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 
@@ -586,7 +580,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, SATURN.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, SATURN, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, SATURN, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -598,7 +592,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){
 		drawSphere(p, mv, invMV, center, radius, false, URANUS.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, URANUS, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, URANUS, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -610,7 +604,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, NEPTUNE.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, NEPTUNE, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, NEPTUNE, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -622,7 +616,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, PLUTO.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, PLUTO, date), center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, PLUTO, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
