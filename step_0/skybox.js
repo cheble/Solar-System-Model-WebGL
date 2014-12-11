@@ -1,25 +1,11 @@
-// Define system to find the correct path
-// In near future, we can upload all the pictures online and use urls
-var OSName="Unknown OS";
-if (navigator.appVersion.indexOf("Win")!=-1) OSName="Windows";
-if (navigator.appVersion.indexOf("Mac")!=-1) OSName="MacOS";
-if (navigator.appVersion.indexOf("X11")!=-1) OSName="UNIX";
-if (navigator.appVersion.indexOf("Linux")!=-1) OSName="Linux";
-
-var separator;
-if(OSName == "Windows") {
-    separator = "\\"
-} else {
-    separator = "/"
-}
-
-var path = "resources" + separator + "skybox" + separator;
-
 // ============================================================================
-// Skybox Things
+// ---   The Amazing Skybox   ---
 // ============================================================================
-var theSkyboxVBOPoints;
+// Here you will find all the variables, sources and functions 
+//  related to the skybox in the project.
+// ============================================================================
 var theSkyboxProgram;
+var theSkyboxVBOPoints;
 var theSkyboxPoints = [];
 var theSkyboxTextures = [];
 var theSkyImage = new Array(6);
@@ -163,5 +149,4 @@ function handleTextureLoaded(image, texture) {
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
     gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-    // gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 }

@@ -4,7 +4,8 @@
     <title>CSCE 470 - Solar System</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">	
 
-<script id="cube-vertex-shader" type="x-shader/x-vertex">
+<!-- Orbit related vertex and fragment shaders -->
+<script id="orbit-vertex-shader" type="x-shader/x-vertex">
 attribute vec4 vPosition;
 
 uniform mat4 modelViewMatrix;
@@ -19,7 +20,7 @@ main()
 }
 </script>
 
-<script id="cube-fragment-shader" type="x-shader/x-fragment">
+<script id="orbit-fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
 
 #extension GL_EXT_frag_depth : enable
@@ -30,6 +31,8 @@ void
 main()
 {
 	gl_FragColor = orbitColor;
+	// Chase, if you one day see this comment here,
+	// please explain me why this line is here...
 	//gl_FragDepthEXT = gl_FragCoord.z + 0.0001;
 }
 </script>
@@ -201,20 +204,22 @@ main()
 }
 </script>
 
-<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<!-- Please, add scripts ordering by name -->
 <script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="../Util/dat.gui.js"></script>
-<script type="text/javascript" src="resources.js"></script>
-<script type="text/javascript" src="skybox.js"></script>
+<script type="text/javascript" src="solar_system.js"></script>
 <script type="text/javascript" src="gui.js"></script>
-<script type="text/javascript" src="orbit.js"></script>
 <script type="text/javascript" src="movement.js"></script>
-<script type="text/javascript" src="cube_ball.js"></script>
+<script type="text/javascript" src="orbit.js"></script>
 <script type="text/javascript" src="planet_data.js"></script>
 <script type="text/javascript" src="planet_calc.js"></script>
 <script type="text/javascript" src="planet_info.js"></script>
 <script type="text/javascript" src="planet_textures.js"></script>
+<script type="text/javascript" src="resources.js"></script>
+<script type="text/javascript" src="skybox.js"></script>
+
 <link rel="stylesheet" href="global.css">
 </head>
 

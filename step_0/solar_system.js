@@ -252,7 +252,7 @@ function initCube()
     wireCube();
 	
 	// Load shaders and initialize attribute buffers
-    theCubeProgram = initShaders(gl, "cube-vertex-shader", "cube-fragment-shader");
+    theCubeProgram = initShaders(gl, "orbit-vertex-shader", "orbit-fragment-shader");
     gl.useProgram(theCubeProgram);
     
     // Create VBOs and load the data into the VBOs
