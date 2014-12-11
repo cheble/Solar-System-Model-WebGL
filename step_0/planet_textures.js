@@ -62,7 +62,7 @@ function loadPlanetTexture() {
     image1.onload = function() { 
         configurePlanetTexture( image1, 1 );
     }
-    image1.src = PLANETS_PATH + "earthmap1k.png";
+    image1.src = PLANETS_PATH + "earthmap2k.jpg";
     
     var image2 = new Image();
     image2.onload = function() { 
