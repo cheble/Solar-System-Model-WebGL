@@ -46,6 +46,7 @@ function initGUI() {
     guiOrbits.add(theOrbits, 'orbitSize', 0.5, 3.0);
     guiOrbits.add(theOrbits, 'orbitLength', 1000, 100000).step(1);
     guiOrbits.addColor(theOrbits, 'orbitColor');
+    guiOrbits.add(theOrbits, 'showRotations');
 
 
     // ====================================

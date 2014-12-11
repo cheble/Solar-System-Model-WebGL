@@ -12,6 +12,8 @@ var MERCURY = {
 		name:"Mercury",								// planet name
 		radius:2439.7,								// volumetric mean radius (km)
 		colorCode:101,
+		o:0.034,									// Obliquity to orbit (degrees)
+		r:6.1381074169,									// axis rotation per day (degrees)  // (side-real day * 360) = 24/(rot period in hrs) * 360
 		a:0.38709843,	aDelta:0.00000000,			// semi-major axis (AU, AU/century)
 		e:0.20563661,	eDelta:0.00002123,			// eccentricity (, /century)
 		I:7.00559432,	IDelta:-0.00590158,			// inclination (degrees, degrees/century)
@@ -24,6 +26,8 @@ var VENUS = {
 		name:"Venus",
 		radius:6051.8,
 		colorCode:102,
+		o:177.36,
+		r:1.4813290814,
 		a:0.72332102,	aDelta:-0.00000026,
 		e:0.00676399,	eDelta:-0.00005107,
 		I:3.39777545,	IDelta:0.00043494,
@@ -37,6 +41,8 @@ var EARTH = {
 		name:"Earth",
 		radius:6371.0,
 		colorCode:103,
+		o:23.44,
+		r:360.9851887443,		// 24.0/23.9345 * 360
 		a:1.00000018,	aDelta:-0.00000003,
 		e:0.01673163,	eDelta:-0.00003661,
 		I:-0.00054346,	IDelta:-0.01337178,
@@ -49,6 +55,8 @@ var MARS = {
 		name:"Mars",
 		radius:3389.5,
 		colorCode:104,
+		o:25.19,
+		r:1.4813290814,
 		a:1.52371243,	aDelta:0.00000097,
 		e:0.09336511,	eDelta:0.00009149,
 		I:1.85181869,	IDelta:-0.00724757,
@@ -61,6 +69,8 @@ var JUPITER = {
 		name:"Jupiter",
 		radius:69911,
 		colorCode:105,
+		o:3.13,
+		r:870.5289672544,
 		a:5.20248019,	aDelta:-0.00002864,
 		e:0.04853590,	eDelta:0.00018026,
 		I:1.29861416,	IDelta:-0.00322699,
@@ -77,6 +87,8 @@ var SATURN = {
 		name:"Saturn",
 		radius:58232,
 		colorCode:106,
+		o:26.73,
+		r:810.8108108108,
 		a:9.54149883,	aDelta:-0.00003065,
 		e:0.05550825,	eDelta:-0.00032044,
 		I:2.49424102,	IDelta:0.00451969,
@@ -93,6 +105,8 @@ var URANUS = {
 		name:"Uranus",
 		radius:25362,
 		colorCode:107,
+		o:97.77,
+		r:501.1600928074,
 		a:19.18797948,	aDelta:-0.00020455,
 		e:0.04685740,	eDelta:-0.00001550,
 		I:0.77298127,	IDelta:-0.00180155,
@@ -109,6 +123,8 @@ var NEPTUNE = {
 		name:"Neptune",
 		radius:24622,
 		colorCode:108,
+		o:28.32,
+		r:536.3128491620,
 		a:30.06952752,	aDelta:0.00006447,
 		e:0.00895439,	eDelta:0.00000818,
 		I:1.77005520,	IDelta:0.00022400,
@@ -125,6 +141,8 @@ var PLUTO = {
 		name:"Pluto",
 		radius:1195,
 		colorCode:109,
+		o:122.53,
+		r:56.3627254509,
 		a:39.48686035,	aDelta:0.00449751,
 		e:0.24885238,	eDelta:0.00006016,
 		I:17.14104260,	IDelta:0.00000501,
@@ -155,6 +173,8 @@ var MOON = {
 		name:"Moon",
 		radius:1737.1,
 		colorCode:110,
+		o:6.68,
+		r:13.1761950077,
 		a:0.00256955529,	aDelta:0.0,
 		e:0.0554,			eDelta:0.0,
 		I:5.16,				IDelta:0.0,
@@ -166,33 +186,4 @@ var MOON = {
 		N:125.08,			NDelta:0.0
 			};
 
-
-/* 
-
-from http://www.stjarnhimlen.se/comp/tutorial.html
-N = 125.1228_deg - 0.0529538083_deg  * d    (Long asc. node)
-i =   5.1454_deg                            (Inclination)
-w = 318.0634_deg + 0.1643573223_deg  * d    (Arg. of perigee)
-a =  60.2666                                (Mean distance)
-e = 0.054900                                (Eccentricity)
-M = 115.3654_deg + 13.0649929509_deg * d    (Mean anomaly)
--------------------------------------------------
-
-*/
-var MOON_ALT = {
-		name:"Moon",
-		radius:1737.1,
-		colorCode:110,
-		a:0.00256954861,	aDelta:0.0,
-		e:0.054900,			eDelta:0.0,
-		I:5.1454,			IDelta:0.0,
-		// L = M + w + N = 115.3654 + 318.0634 + 125.1228 = 558.5516_deg = 198.5516_deg
-		// LDelta = (13.0649929509 + 0.1643573223 + -0.0529538083) * 36525.0 = 481267.88088_deg
-		L:198.5516,			LDelta:481267.88088,
-		// p = N + w = 125.1228 + 318.0634 = 83.1862_deg
-		// pDelta = wDelta = 0.1643573223 * 36525.0 = 6003.15119701_deg
-		p:83.1862,			pDelta:6003.15119701,
-		// NDelta = -0.0529538083 * 36525.0 = -1934.13784816_deg
-		N:125.1228,			NDelta:-1934.13784816
-			};
 

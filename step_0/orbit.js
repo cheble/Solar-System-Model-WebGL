@@ -20,6 +20,7 @@ var Orbit = function() {
 	this.visible = true;
 	this.orbitSize = 1.0;
 	this.orbitColor = [ 128, 128, 0, 0.99 ];
+	this.showRotations = true;
 
 	// this function should be called to every planet/satellite moving on the system
 	this.addOrbitPos = function( pos ) {

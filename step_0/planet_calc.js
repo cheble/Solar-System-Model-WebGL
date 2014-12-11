@@ -154,3 +154,31 @@ function normalizeRadians(radians)
 		return radians + Math.ceil((-radians/(2*PI)) + 0.1)*(2*PI);
 	}
 }
+
+function applyAxisTilt( invMV, body, T )
+{
+	if(! (body.o && body.r)){
+		return invMV;
+	}
+	
+	// TODO: this tilt is not in the correct direction for the date
+	var tilt = rotate(body.o + body.I, vec4(0.0, 0.0, 1.0, 0.0));
+	
+	if(!theOrbits.showRotations){
+		return mult(tilt, invMV);
+	}
+	
+	var rotAngle = - body.r * T;
+	rotAngle = normalizeDegree(rotAngle);
+	var rot = rotate(rotAngle, vec4(0.0, 1.0, 0.0, 0.0));
+	
+	var change = mult(rot, tilt);
+	
+	return mult(change, invMV);
+}
+
+function calToDate(Y, M, D){
+	// days since 2000 Jan 0.0 TDT
+	var d = 367*Y - (7*(Y + ((M+9)/12)))/4 + (275*M)/9 + D - 730530;
+	return d;
+}

@@ -324,7 +324,7 @@ window.onload = function init()
     initSkybox();
 	initSphere();
 	
-    //render();
+    render();
     
     canvas.addEventListener("mousedown", function(e){
  		var pos = getMousePos(e, this);
@@ -465,7 +465,6 @@ function inverseMatrix(mat) {
 	return dest;
 };
 
-
 // ============================================================================
 // Rendering function
 // ============================================================================
@@ -475,7 +474,7 @@ function render()
 	if(!theTime.isPaused()) {	
 		date += 0.10*theTime.getDateScale();
 	}
-
+	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 	// projection matrix
     var  p = perspective( theFovy, theAspect, theZNear, theZFar );
@@ -503,20 +502,20 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, sunTexture);
 	var center = vec4(0.0, 0.0, 0.0, 1.0);
 	var radius = SUN.radius * SUN_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, SUN.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, true);
+		drawSphere(p, mv, applyAxisTilt(invMV, SUN, date), center, radius, true);
 	}
 
 	// *** Mercury ***
 	usePlanetTexture(theSphereProgram, mercuryTexture);
 	center = vec4( scalev(DIST_SCALE, planetPosition(MERCURY, date/36525.0)), 1.0 );
 	radius = MERCURY.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MERCURY.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, MERCURY, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -525,10 +524,10 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, venusTexture);
 	center = vec4( scalev(DIST_SCALE, planetPosition(VENUS, date/36525.0)), 1.0 );
 	radius = VENUS.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, VENUS.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, VENUS, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -537,10 +536,10 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, earthTexture);
 	center = vec4( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)), 1.0 );
 	radius = EARTH.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, EARTH.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, EARTH, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -549,10 +548,10 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, moonTexture);
 	center = vec4( add(vec3(center), scalev(SAT_DIST_SCALE, planetPosition(MOON, date/36525.0))), 1.0 );
 	radius = MOON.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MOON.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, MOON, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -561,10 +560,10 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, marsTexture);
 	center = vec4( scalev(DIST_SCALE, planetPosition(MARS, date/36525.0)), 1.0 );
 	radius = MARS.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MARS.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, MARS, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -573,10 +572,10 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, jupiterTexture);
 	center = vec4( scalev(DIST_SCALE, planetPosition(JUPITER, date/36525.0)), 1.0 );
 	radius = JUPITER.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, JUPITER.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, JUPITER, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 
@@ -584,10 +583,10 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, saturnTexture);
 	center = vec4( scalev(DIST_SCALE, planetPosition(SATURN, date/36525.0)), 1.0 );
 	radius = SATURN.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, SATURN.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, SATURN, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -599,7 +598,7 @@ function drawPlanets(p, mv, colorCode)
 	if(colorCode){
 		drawSphere(p, mv, invMV, center, radius, false, URANUS.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, URANUS, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -608,10 +607,10 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, neptuneTexture);
 	center = vec4( scalev(DIST_SCALE, planetPosition(NEPTUNE, date/36525.0)), 1.0 );
 	radius = NEPTUNE.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, NEPTUNE.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, NEPTUNE, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -620,10 +619,10 @@ function drawPlanets(p, mv, colorCode)
 	usePlanetTexture(theSphereProgram, plutoTexture);
 	center = vec4( scalev(DIST_SCALE, planetPosition(PLUTO, date/36525.0)), 1.0 );
 	radius = PLUTO.radius * PLANET_SCALE;
-	if(colorCode){
+	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, PLUTO.colorCode);
 	}else{
-		drawSphere(p, mv, invMV, center, radius, false);
+		drawSphere(p, mv, applyAxisTilt(invMV, PLUTO, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
