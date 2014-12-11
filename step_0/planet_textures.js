@@ -8,6 +8,7 @@ var saturnTexture;
 var uranusTexture;
 var neptuneTexture;
 var plutoTexture;
+var moonTexture;
 
 function configurePlanetTexture( image, imageID) {
 	if(imageID == 1){
@@ -40,6 +41,9 @@ function configurePlanetTexture( image, imageID) {
 	} else if (imageID == 10){
 		venusTexture = gl.createTexture();
 	    gl.bindTexture( gl.TEXTURE_2D, venusTexture );
+	} else if (imageID == 11){
+		moonTexture = gl.createTexture();
+	    gl.bindTexture( gl.TEXTURE_2D, moonTexture );
 	} else {
 		return;
 	}
@@ -91,14 +95,14 @@ function loadPlanetTexture() {
     
     var image6 = new Image();
     image6.onload = function() { 
-        //configurePlanetTexture( image6, 6 );
+        configurePlanetTexture( image6, 6 );
         
     }
     image6.src = PLANETS_PATH + "plutomap1k.jpg";
     
     var image7 = new Image();
     image7.onload = function() { 
-        //configurePlanetTexture( image7, 7 );
+        configurePlanetTexture( image7, 7 );
         
     }
     image7.src = PLANETS_PATH + "saturnmap.jpg";
@@ -122,6 +126,12 @@ function loadPlanetTexture() {
         configurePlanetTexture( image10, 10 );
     }
     image10.src = PLANETS_PATH + "venusmap.jpg";
+    
+    var image11 = new Image();
+    image11.onload = function() { 
+        configurePlanetTexture( image11, 11 );
+    }
+    image11.src = PLANETS_PATH + "moonmap1k.jpg";
     
 }
 

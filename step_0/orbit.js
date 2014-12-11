@@ -44,6 +44,6 @@ var Orbit = function() {
 	    gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
 	    gl.enableVertexAttribArray(vPosition);
 	    
-		if(this.visible) gl.drawArrays(gl.POINTS, 0, this.Points.length);
+		gl.drawArrays(gl.POINTS, 0, this.Points.length);
 	}
 }
