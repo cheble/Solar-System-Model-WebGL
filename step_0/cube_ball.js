@@ -8,7 +8,7 @@ var canvas;
 var	theFovy = 45.0;  		// Field-of-view in Y direction angle (in degrees)
 var theAspect = 1.0;       // Viewport aspect ratio
 var theZNear = 0.1;
-var theZFar = 10000.0;
+var theZFar = 15000.0;
 
 // Rotation parameters
 var theAngle = 0.0;
