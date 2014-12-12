@@ -15,11 +15,34 @@ body, html{
 .infoBox {
 	position: fixed;
 	left: 15px;
-	top: 0px;
 	background: #000;
 	cursor: default;
 	width: 245px;
 	line-height: 27px;
 	overflow: hidden;
 	z-index: 100;
+	display: block-inline;
+}
+
+.dateBox {
+	position: fixed;
+	left: 275px;
+	background: #000;
+	cursor: default;
+	width: 245px;
+	line-height: 27px;
+	overflow: hidden;
+	z-index: 100;
+	display: block-inline;
+}
+
+.box {
+	position: fixed;
+	top: 0px;
+	color: #EEE;
+	font: 11px "Lucida Grande",sans-serif;
+	text-shadow: 0px -1px 0px #111;
+	margin-right: auto;
+	margin-right: auto;
+	display: block;
 }

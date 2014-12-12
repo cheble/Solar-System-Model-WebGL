@@ -23,8 +23,8 @@ var	theStartX, theStartY;
 var	theCurtQuat = [1, 0, 0, 0];
 var	theScale = 1.0;
 var theInit = true;
-
-var date = -3543.0;
+/** J2000 - Julian Date Number since 1/1/2000 0:00 */
+var date = currentDate();
 
 var lightPosition = vec4(0.0, 0.0, 0.0, 1.0 );
 var ka = 0.3;
@@ -216,6 +216,7 @@ function stopScale(x, y)
 var theSphereVBOPoints;
 var theSphereProgram;
 var theSpherePoints = [];
+currentDate();
 
 var theSphereVertices = [
                          vec4( 0.0,  0.0,  0.0, 1.0 ),
@@ -465,11 +466,18 @@ function inverseMatrix(mat) {
 // ============================================================================
 // Rendering function
 // ============================================================================
+var guiCount = 100;
 function render() 
 {
 	// increment date
 	if(!theTime.isPaused()) {	
 		date += 0.10*theTime.getDateScale();
+		if(guiCount >= 15){
+			dateToGUI();
+			guiCount = 0;
+		} else {
+			guiCount++;
+		}
 	}
 	
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
@@ -494,6 +502,8 @@ function drawPlanets(p, mv, colorCode)
 	gl.useProgram(theSphereProgram);
 	
 	var invMV = inverseMatrix(mv);
+	
+	var cent = date/36525.0;
     
 	// *** Sun ***
 	usePlanetTexture(theSphereProgram, sunTexture);
@@ -507,7 +517,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Mercury ***
 	usePlanetTexture(theSphereProgram, mercuryTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(MERCURY, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(MERCURY, cent)), 1.0 );
 	radius = MERCURY.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MERCURY.colorCode);
@@ -519,7 +529,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Venus ***
 	usePlanetTexture(theSphereProgram, venusTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(VENUS, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(VENUS, cent)), 1.0 );
 	radius = VENUS.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, VENUS.colorCode);
@@ -531,7 +541,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Earth ***
 	usePlanetTexture(theSphereProgram, earthTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(EARTH, cent)), 1.0 );
 	radius = EARTH.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, EARTH.colorCode);
@@ -543,7 +553,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Moon ***
 	usePlanetTexture(theSphereProgram, moonTexture);
-	center = vec4( add(vec3(center), scalev(SAT_DIST_SCALE, planetPosition(MOON, date/36525.0))), 1.0 );
+	center = vec4( add(vec3(center), scalev(SAT_DIST_SCALE, planetPosition(MOON, cent))), 1.0 );
 	radius = MOON.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MOON.colorCode);
@@ -555,7 +565,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Mars ***
 	usePlanetTexture(theSphereProgram, marsTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(MARS, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(MARS, cent)), 1.0 );
 	radius = MARS.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, MARS.colorCode);
@@ -567,7 +577,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Jupiter ***
 	usePlanetTexture(theSphereProgram, jupiterTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(JUPITER, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(JUPITER, cent)), 1.0 );
 	radius = JUPITER.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, JUPITER.colorCode);
@@ -578,7 +588,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Saturn ***
 	usePlanetTexture(theSphereProgram, saturnTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(SATURN, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(SATURN, cent)), 1.0 );
 	radius = SATURN.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, SATURN.colorCode);
@@ -590,7 +600,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Uranus ***
 	usePlanetTexture(theSphereProgram, uranusTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(URANUS, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(URANUS, cent)), 1.0 );
 	radius = URANUS.radius * PLANET_SCALE;
 	if(colorCode){
 		drawSphere(p, mv, invMV, center, radius, false, URANUS.colorCode);
@@ -602,7 +612,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Neptune ***
 	usePlanetTexture(theSphereProgram, neptuneTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(NEPTUNE, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(NEPTUNE, cent)), 1.0 );
 	radius = NEPTUNE.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, NEPTUNE.colorCode);
@@ -614,7 +624,7 @@ function drawPlanets(p, mv, colorCode)
 
 	// *** Pluto ***
 	usePlanetTexture(theSphereProgram, plutoTexture);
-	center = vec4( scalev(DIST_SCALE, planetPosition(PLUTO, date/36525.0)), 1.0 );
+	center = vec4( scalev(DIST_SCALE, planetPosition(PLUTO, cent)), 1.0 );
 	radius = PLUTO.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
 		drawSphere(p, mv, invMV, center, radius, false, PLUTO.colorCode);
@@ -623,6 +633,46 @@ function drawPlanets(p, mv, colorCode)
 		theOrbits.addOrbitPos(center);
 	}
 	
+}
+
+// Get current date in J2000
+function currentDate(){
+	var date = new Date();
+	return date.getTime()/86400000 - 10957.5;	// UT date in ms / (86400 * 1000) + 2440587.5 - 2451545.0
+}
+
+function dateToGUI(){
+	
+	var y = 4716;	var v = 3;
+	var j = 1401;	var u = 5;
+	var m = 2;		var s = 153;
+	var n = 12;		var w = 2;
+	var r = 4;		var B = 274277;
+	var p = 1461;	var C = -38;
+	
+	var J = date + 2451545.0;
+	
+	var f = J + j + ~~( (~~((4 * J + B) / 146097) * 3) / 4) + C;
+	var e = r * f + v;
+	var g = ~~((e % p) / r);
+	var h = u * g + w;
+	var D = ~~((h % s) / u) + 1;
+	var M = ((~~(h / s) + m) % n) + 1;
+	var Y = ~~(e / p) - y + ~~((n + m - M) / n);
+	
+	if(M <= 9) M="0"+M;
+	if(D <= 9) D="0"+D;
+	
+	document.getElementById("date").innerHTML = "Date: "+Y+"-"+M+"-"+D;
+}
+
+function setDate(Year, Month, Day){
+	a = Int((14 - Month) / 12);
+	y = Year + 4800 - a;
+	m = Month + 12 * a - 3;
+	JDN = Day + Int((153 * m + 2) / 5) + 365 * y + Int(y / 4) - Int(y / 100) + Int(y / 400) - 32045;
+	
+	date = JDN - 2451545.0;
 }
 
 var theTime;

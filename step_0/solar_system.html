@@ -31,9 +31,9 @@ void
 main()
 {
 	gl_FragColor = orbitColor;
-	// Chase, if you one day see this comment here,
-	// please explain me why this line is here...
-	//gl_FragDepthEXT = gl_FragCoord.z + 0.0001;
+	// Move the orbit points just behind the planets in the z buffer
+	// This should make it so you dont see the orbit overtop of the planet
+	gl_FragDepthEXT = gl_FragCoord.z + 0.00001;
 }
 </script>
 
@@ -64,7 +64,8 @@ main()
 	
 	vec3 vPrime = vec3(-v.y, v.x, 0.0);						// vector orthagonal to v
 	if(vPrime == vec3(0.0, 0.0, 0.0))	vPrime = vec3(0.0, v.z, -v.y);
-		if(vPrime == vec3(0.0, 0.0, 0.0))	vPrime = vec3(v.z, 0.0, -v.x);
+	if(vPrime == vec3(0.0, 0.0, 0.0))	vPrime = vec3(v.z, 0.0, -v.x);
+	if(vPrime == vec3(0.0, 0.0, 0.0))	vPrime = vec3(1.0, 0.0, 0.0);
 	
 	if(vPosition.x == 1.0){
 		
@@ -235,13 +236,21 @@ main()
 <canvas id="gl-canvas" width="2048" height="1024">
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
-<div class="dg ac">
+<div class="box">
 	<div class="infoBox">
 		<div class="info">
 			<b>Planet Info:</b>
 		</div>
 		<div class="info" id="info">
 			Click on a planet to view information.
+		</div>
+	</div>
+</div>
+
+<div class="box">
+	<div class="dateBox">
+		<div class="info" id="date">
+			
 		</div>
 	</div>
 </div>
