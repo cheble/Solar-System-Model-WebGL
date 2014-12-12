@@ -412,7 +412,10 @@ window.onload = function init()
         keyUp(key);
     } );
     
-    canvas.addEventListener("contextmenu", function(e) {return false;});
+    canvas.addEventListener("wheel", function(e) {
+    	e.preventDefault();
+        return false;
+    } );
 };
 
 function inverseMatrix(mat) {
