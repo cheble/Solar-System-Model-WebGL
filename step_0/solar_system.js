@@ -417,6 +417,34 @@ window.onload = function init()
     	e.preventDefault();
         return false;
     } );
+    
+    document.getElementById("date").addEventListener("click", function(e) {
+    	//if(document.getElementById("dateInputBox").style.display == "none"){
+    	console.log(document.getElementById("dateInputBox"));
+    	document.getElementById("dateInputBox").style.display = 'block';
+    	//} else {
+    	//	document.getElementById("dateInputBox").style.visibility = "none";
+    	//}
+    	
+    } );
+    
+    
+    document.getElementById("enterDate").addEventListener("click", function(e) {
+
+        var dateStr = document.getElementById("dateInput").value;
+        console.log(dateStr);
+        var dateObj = new Date(dateStr);
+        console.log(dateObj);
+        if(! isNaN( dateObj.getTime() )){
+        	setDate(dateObj.getFullYear(), dateObj.getMonth()+1, dateObj.getDate());
+        	document.getElementById("dateInputBox").style.display = 'none';
+        	document.getElementById("dateInput").value = "";
+        } else {
+        	document.getElementById("dateInput").value = "Invalid Date";
+        }
+        
+    } );
+    
 };
 
 function inverseMatrix(mat) {
@@ -667,10 +695,10 @@ function dateToGUI(){
 }
 
 function setDate(Year, Month, Day){
-	a = Int((14 - Month) / 12);
-	y = Year + 4800 - a;
-	m = Month + 12 * a - 3;
-	JDN = Day + Int((153 * m + 2) / 5) + 365 * y + Int(y / 4) - Int(y / 100) + Int(y / 400) - 32045;
+	var a = ~~((14 - Month) / 12);
+	var y = Year + 4800 - a;
+	var m = Month + 12 * a - 3;
+	var JDN = Day + ~~((153 * m + 2) / 5) + 365 * y + ~~(y / 4) - ~~(y / 100) + ~~(y / 400) - 32045;
 	
 	date = JDN - 2451545.0;
 }

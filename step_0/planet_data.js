@@ -4,7 +4,9 @@
 
 var SUN = {
 		name:"Sun",									// planet name
-		info:"The Sun (Star)<br>Center of Earth's Solar System<br>Radius: 696000 km",
+		info:"The Sun (Star)" +
+				"<br>Center of Earth's Solar System" +
+				"<br>Radius: 696,000 km",
 		radius:696000.0,							// volumetric mean radius (km)
 		colorCode:100,
 		o:7.25,
@@ -14,7 +16,12 @@ var SUN = {
 
 var MERCURY = {
 		name:"Mercury",								// planet name
-		info:"Mercury (Planet)<br>Closest Planet To The Sun<br>Radius: 2439.7 km",
+		info:"Mercury (Planet)" +
+				"<br>Closest planet to the Sun" +
+				"<br>Radius: 2,439.7 km" +
+				"<br>Distance from the Sun: 57.9 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 1,407.6 hours" +
+				"<br>Orbital Period: 88.0 days",
 		radius:2439.7,								// volumetric mean radius (km)
 		colorCode:101,
 		o:0.034,									// Obliquity to orbit (degrees)
@@ -29,7 +36,12 @@ var MERCURY = {
 
 var VENUS = {
 		name:"Venus",
-		info:"Venus (Planet)<br>2nd Planet From The Sun<br>Radius: 6051.8 km",
+		info:"Venus (Planet)" +
+				"<br>2nd planet from the Sun" +
+				"<br>Radius: 6,051.8 km" +
+				"<br>Distance from the Sun: 108.2 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 5,832.5 hours" +
+				"<br>Orbital Period: 224.7 days",
 		radius:6051.8,
 		colorCode:102,
 		o:177.36,
@@ -45,7 +57,12 @@ var VENUS = {
 // TODO: This is actually the Earth-Moon Barycenter (the center of the Earth-Moon body) orbit
 var EARTH = {
 		name:"Earth",
-		info:"Earth (Planet)<br>3rd Planet From The Sun<br>Radius: 6371.0 km",
+		info:"Earth (Planet)" +
+				"<br>3rd planet from the Sun" +
+				"<br>Radius: 6,371.0 km" +
+				"<br>Distance from the Sun: 149.6 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 23.9 hours" +
+				"<br>Orbital Period: 365.2 days",
 		radius:6371.0,
 		colorCode:103,
 		o:23.44,
@@ -60,7 +77,12 @@ var EARTH = {
 
 var MARS = {
 		name:"Mars",
-		info:"Mars (Planet)<br>4th Planet From The Sun<br>Radius: 3389.5 km",
+		info:"Mars (Planet)" +
+				"<br>4th planet from the Sun" +
+				"<br>Radius: 3,389.5 km" +
+				"<br>Distance from the Sun: 227.9 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 24.6 hours" +
+				"<br>Orbital Period: 687.0 days",
 		radius:3389.5,
 		colorCode:104,
 		o:25.19,
@@ -75,7 +97,12 @@ var MARS = {
 
 var JUPITER = {
 		name:"Jupiter",
-		info:"Jupiter (Planet)<br>5nd Planet From The Sun<br>Radius: 69911 km",
+		info:"Jupiter (Planet)" +
+				"<br>5th planet from the Sun" +
+				"<br>Radius: 69,911 km" +
+				"<br>Distance from the Sun: 778.6 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 9.9 hours" +
+				"<br>Orbital Period: 4,331 days",
 		radius:69911,
 		colorCode:105,
 		o:3.13,
@@ -94,7 +121,12 @@ var JUPITER = {
 
 var SATURN = {
 		name:"Saturn",
-		info:"Saturn (Planet)<br>6th Planet From The Sun<br>Radius: 58232 km",
+		info:"Saturn (Planet)" +
+				"<br>6th planet from the Sun" +
+				"<br>Radius: 58,232 km" +
+				"<br>Distance from the Sun: 1,433.5 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 10.7 hours" +
+				"<br>Orbital Period: 10,747 days",
 		radius:58232,
 		colorCode:106,
 		o:26.73,
@@ -113,7 +145,12 @@ var SATURN = {
 
 var URANUS = {
 		name:"Uranus",
-		info:"Uranus (Planet)<br>7nd Planet From The Sun<br>Radius: 25362 km",
+		info:"Uranus (Planet)" +
+				"<br>7th planet from the Sun" +
+				"<br>Radius: 25,362 km" +
+				"<br>Distance from the Sun: 2,872.5 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 17.2 hours" +
+				"<br>Orbital Period: 30,589 days",
 		radius:25362,
 		colorCode:107,
 		o:97.77,
@@ -132,7 +169,12 @@ var URANUS = {
 
 var NEPTUNE = {
 		name:"Neptune",
-		info:"Neptune (Planet)<br>8th Planet From The Sun<br>Radius: 24622 km",
+		info:"Neptune (Planet)" +
+				"<br>8th planet from the Sun" +
+				"<br>Radius: 24,622 km" +
+				"<br>Distance from the Sun: 4,495.1 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 16.1 hours" +
+				"<br>Orbital Period: 59,800 days",
 		radius:24622,
 		colorCode:108,
 		o:28.32,
@@ -151,7 +193,12 @@ var NEPTUNE = {
 
 var PLUTO = {
 		name:"Pluto",
-		info:"Pluto (Dwarf Planet)<br>9th Major Body From The Sun<br>Radius: 1195 km",
+		info:"Pluto (Dwarf Planet)" +
+				"<br>9th major body from the Sun" +
+				"<br>Radius: 1,195 km" +
+				"<br>Distance from the Sun: 5,870.0 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 153.3 hours" +
+				"<br>Orbital Period: 90,588 days",
 		radius:1195,
 		colorCode:109,
 		o:122.53,
@@ -184,7 +231,12 @@ Pnode = 18.600		(longitude of the ascending node precession period)
 
 var MOON = {
 		name:"Moon",
-		info:"Moon (Natural Satellite)<br>Earth's only moon<br>Radius: 1737.1 km",
+		info:"Moon (Natural Satellite)" +
+				"<br>Earth's only moon" +
+				"<br>Radius: 1,737.1 km" +
+				"<br>Distance from Earth: 0.384 &times; 10<sup>6</sup> km" +
+				"<br>Rotational Period: 655.7 hours" +
+				"<br>Orbital Period: 27.3 days",
 		radius:1737.1,
 		colorCode:110,
 		o:6.68,

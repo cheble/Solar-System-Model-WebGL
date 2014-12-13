@@ -7,6 +7,19 @@ body, html{
 	overflow: hidden;
 }
 
+
+#dateInput {
+	width: 156px;
+	background: rgba(255, 255, 255, 0.2);
+	color: #EEE;
+	font: 11px "Lucida Grande",sans-serif;
+	text-shadow: 0px -1px 0px #111;
+}
+
+#dateInputBox {
+	display: none;
+}
+
 .info {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 	padding: 0px 4px 0px 5px;
@@ -28,7 +41,7 @@ body, html{
 	position: fixed;
 	left: 275px;
 	background: #000;
-	cursor: default;
+	cursor: pointer;
 	width: 245px;
 	line-height: 27px;
 	overflow: hidden;
