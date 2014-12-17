@@ -9,11 +9,20 @@ var uranusTexture;
 var neptuneTexture;
 var plutoTexture;
 var moonTexture;
+var earthNightTexture;
+var earthBumpMap;
+var earthSpecularMap;
+
+var earthTextures = [];
+var earthShaderTexNames = ["daycolormap", "nightcolormap",
+                      "bumpmap", "specularmap"];
 
 function configurePlanetTexture( image, imageID) {
-	if(imageID == 1){
+	var dataType = gl.RGB;  // the standard for our textures
+    if(imageID == 1){
 		earthTexture = gl.createTexture();
 	    gl.bindTexture( gl.TEXTURE_2D, earthTexture );
+        earthTextures.push(earthTexture);
 	} else if (imageID == 2){
 		jupiterTexture = gl.createTexture();
 	    gl.bindTexture( gl.TEXTURE_2D, jupiterTexture );
@@ -44,11 +53,25 @@ function configurePlanetTexture( image, imageID) {
 	} else if (imageID == 11){
 		moonTexture = gl.createTexture();
 	    gl.bindTexture( gl.TEXTURE_2D, moonTexture );
-	} else {
-		return;
-	}
+	} else if (imageID == 12){
+        earthNightTexture = gl.createTexture();
+        gl.bindTexture( gl.TEXTURE_2D, earthNightTexture );
+        earthTextures.push(earthNightTexture);
+    } else if (imageID == 13){
+        earthBumpMap = gl.createTexture();
+        gl.bindTexture( gl.TEXTURE_2D, earthBumpMap );
+        earthTextures.push(earthBumpMap);
+    } else if (imageID == 14){
+        earthSpecularMap = gl.createTexture();
+        gl.bindTexture( gl.TEXTURE_2D, earthSpecularMap );
+        earthTextures.push(earthSpecularMap);
+        dataType = gl.LUMINANCE;
+    } 
+    else {
+        return;
+    }
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image );
+    gl.texImage2D( gl.TEXTURE_2D, 0, dataType, dataType, gl.UNSIGNED_BYTE, image );
     gl.generateMipmap( gl.TEXTURE_2D );
     gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, 
                       gl.NEAREST );
@@ -129,7 +152,25 @@ function loadPlanetTexture() {
     image11.onload = function() { 
         configurePlanetTexture( image11, 11 );
     }
-    image11.src = PLANETS_PATH + "moonmap1k.jpg";
+    image11.src = PLANETS_PATH + "moonmap1k.jpg";   
+
+    var image12 = new Image();
+    image12.onload = function() { 
+        configurePlanetTexture( image12, 12 );
+    }
+    image12.src = PLANETS_PATH + "earthlights1k.jpg";
+
+    var image13 = new Image();
+    image13.onload = function() { 
+        configurePlanetTexture( image13, 13 );
+    }
+    image13.src = PLANETS_PATH + "earthbump1k.jpg";
+
+    var image14 = new Image();
+    image14.onload = function() { 
+        configurePlanetTexture( image14, 14 );
+    }
+    image14.src = PLANETS_PATH + "earthspec1k.jpg";
     
 }
 
@@ -137,4 +178,12 @@ function usePlanetTexture(theProgram, texture) {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.uniform1i(gl.getUniformLocation(theProgram, "texture"), 0);
+}
+
+function useEarthTextures(theProgram, textures) {
+    for(var i = 0; i < textures.length; ++i) {
+        gl.activeTexture(gl.TEXTURE0 + i);  // gl.TEXTUREi constants are consecutive
+        gl.bindTexture(gl.TEXTURE_2D, textures[i]);
+        gl.uniform1i(gl.getUniformLocation(theProgram, earthShaderTexNames[i]), i);
+    }
 }

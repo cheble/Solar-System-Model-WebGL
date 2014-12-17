@@ -286,7 +286,7 @@ var MovementOptions = function() {
                 break;
             case "Earth":
                 center = vec3( scalev(DIST_SCALE, planetPosition(EARTH, date/36525.0)));
-                offset = 8 * EARTH.radius * PLANET_SCALE;
+                offset = 3 * EARTH.radius * PLANET_SCALE;
                 break;
             case "Mars":
                 center = vec3( scalev(DIST_SCALE, planetPosition(MARS, date/36525.0)));

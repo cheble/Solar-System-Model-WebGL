@@ -249,39 +249,39 @@ function initSphere()
     gl.bufferData(gl.ARRAY_BUFFER, flatten(theSpherePoints), gl.STATIC_DRAW);
 }
 
-function drawSphere(p, mv, invMV, center, radius, useLighting, colorCode) 
+function drawSphere(theProgram, p, mv, invMV, center, radius, colorCode) 
 {
 	
-	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "projectionMatrix"),false, flatten(p));
+	gl.uniformMatrix4fv( gl.getUniformLocation(theProgram, "projectionMatrix"),false, flatten(p));
 	 
-	gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "modelViewMatrix"),false, flatten(mv));
+	gl.uniformMatrix4fv( gl.getUniformLocation(theProgram, "modelViewMatrix"),false, flatten(mv));
 
-    gl.uniformMatrix4fv( gl.getUniformLocation(theSphereProgram, "invMV"),false, flatten(invMV));
+    gl.uniformMatrix4fv( gl.getUniformLocation(theProgram, "invMV"),false, flatten(invMV));
     
 	if(colorCode){
 		var code = colorCode/256.0;
-		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "colorCode"), code);
+		gl.uniform1f( gl.getUniformLocation(theProgram, "colorCode"), code);
 	} else {
-		gl.uniform1f( gl.getUniformLocation(theSphereProgram, "colorCode"), 0.0);
+		gl.uniform1f( gl.getUniformLocation(theProgram, "colorCode"), 0.0);
 	}
 	
-	gl.uniform1i(gl.getUniformLocation(theSphereProgram, "useLighting"), useLighting);
+	// gl.uniform1i(gl.getUniformLocation(theProgram, "useLighting"), useLighting);
 	
-	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ka"), ka);
+	gl.uniform1f( gl.getUniformLocation(theProgram, "ka"), ka);
 	
-    gl.uniform1f( gl.getUniformLocation(theSphereProgram, "kd"), kd);
+    gl.uniform1f( gl.getUniformLocation(theProgram, "kd"), kd);
     
-	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "ks"), ks);
+	gl.uniform1f( gl.getUniformLocation(theProgram, "ks"), ks);
     
-	gl.uniform4fv( gl.getUniformLocation(theSphereProgram, "lightPosition"),flatten(lightPosition) );
+	gl.uniform4fv( gl.getUniformLocation(theProgram, "lightPosition"),flatten(lightPosition) );
     
-	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "shininess"), shininess );
+	gl.uniform1f( gl.getUniformLocation(theProgram, "shininess"), shininess );
 	
-	gl.uniform4fv( gl.getUniformLocation(theSphereProgram, "center"), flatten(center));
-	gl.uniform1f( gl.getUniformLocation(theSphereProgram, "radius"), radius );
+	gl.uniform4fv( gl.getUniformLocation(theProgram, "center"), flatten(center));
+	gl.uniform1f( gl.getUniformLocation(theProgram, "radius"), radius );
 	
     // Associate out shader variables with our data buffer
-    var vPosition = gl.getAttribLocation(theSphereProgram, "vPosition");
+    var vPosition = gl.getAttribLocation(theProgram, "vPosition");
     gl.bindBuffer(gl.ARRAY_BUFFER, theSphereVBOPoints);
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
@@ -289,6 +289,31 @@ function drawSphere(p, mv, invMV, center, radius, useLighting, colorCode)
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
 
+function initEarthProgram()
+{
+	// Load shaders and initialize attribute buffers
+	theEarthProgram = initShaders(gl, "sphere-vertex-shader", "earth-fragment-shader");
+    gl.useProgram(theEarthProgram);
+    
+    // // Create VBOs and load the data into the VBOs
+    // theSphereVBOPoints = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, theSphereVBOPoints);
+    // gl.bufferData(gl.ARRAY_BUFFER, flatten(theSpherePoints), gl.STATIC_DRAW);
+}
+
+function drawEarth(theProgram, p, mv, invMV, center, radius, renderClouds, colorCode)
+{
+	gl.uniform1i(gl.getUniformLocation(theProgram, "renderClouds"), renderClouds);
+
+	drawSphere(theProgram, p, mv, invMV, center, radius, colorCode);
+}
+
+function drawPlanet(theProgram, p, mv, invMV, center, radius, useLighting, colorCode)
+{
+	gl.uniform1i(gl.getUniformLocation(theProgram, "useLighting"), useLighting);
+
+	drawSphere(theProgram, p, mv, invMV, center, radius, colorCode);	
+}
 // ============================================================================
 // WebGL Initialization
 // ============================================================================
@@ -322,6 +347,7 @@ window.onload = function init()
     initSkyboxTextures();
     initSkybox();
 	initSphere();
+	initEarthProgram();
 	
     render();
     
@@ -526,21 +552,20 @@ function render()
 }
 
 function drawPlanets(p, mv, colorCode)
-{
-	gl.useProgram(theSphereProgram);
-	
+{	
 	var invMV = inverseMatrix(mv);
 	
 	var cent = date/36525.0;
     
+    gl.useProgram(theSphereProgram);
 	// *** Sun ***
 	usePlanetTexture(theSphereProgram, sunTexture);
 	var center = vec4(0.0, 0.0, 0.0, 1.0);
 	var radius = SUN.radius * SUN_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, SUN.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, SUN.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, SUN, date), center, radius, false);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, SUN, date), center, radius, false);
 	}
 
 	// *** Mercury ***
@@ -548,9 +573,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(MERCURY, cent)), 1.0 );
 	radius = MERCURY.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, MERCURY.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, MERCURY.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, MERCURY, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, MERCURY, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -560,33 +585,35 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(VENUS, cent)), 1.0 );
 	radius = VENUS.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, VENUS.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, VENUS.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, VENUS, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, VENUS, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
 
+	gl.useProgram(theEarthProgram);
 	// *** Earth ***
-	usePlanetTexture(theSphereProgram, earthTexture);
+	useEarthTextures(theEarthProgram, earthTextures);
 	center = vec4( scalev(DIST_SCALE, planetPosition(EARTH, cent)), 1.0 );
 	radius = EARTH.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, EARTH.colorCode);
+		drawEarth(theEarthProgram, p, mv, invMV, center, radius, false, EARTH.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, EARTH, date), center, radius, true);
+		drawEarth(theEarthProgram, p, mv, applyAxisTilt(invMV, EARTH, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
 	}
 	
-
+	
+	gl.useProgram(theSphereProgram);
 	// *** Moon ***
 	usePlanetTexture(theSphereProgram, moonTexture);
 	center = vec4( add(vec3(center), scalev(SAT_DIST_SCALE, planetPosition(MOON, cent))), 1.0 );
 	radius = MOON.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, MOON.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, MOON.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, MOON, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, MOON, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -596,9 +623,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(MARS, cent)), 1.0 );
 	radius = MARS.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, MARS.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, MARS.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, MARS, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, MARS, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -608,9 +635,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(JUPITER, cent)), 1.0 );
 	radius = JUPITER.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, JUPITER.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, JUPITER.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, JUPITER, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, JUPITER, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 
@@ -619,9 +646,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(SATURN, cent)), 1.0 );
 	radius = SATURN.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, SATURN.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, SATURN.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, SATURN, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, SATURN, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -631,9 +658,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(URANUS, cent)), 1.0 );
 	radius = URANUS.radius * PLANET_SCALE;
 	if(colorCode){
-		drawSphere(p, mv, invMV, center, radius, false, URANUS.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, URANUS.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, URANUS, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, URANUS, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -643,9 +670,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(NEPTUNE, cent)), 1.0 );
 	radius = NEPTUNE.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, NEPTUNE.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, NEPTUNE.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, NEPTUNE, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, NEPTUNE, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	
@@ -655,9 +682,9 @@ function drawPlanets(p, mv, colorCode)
 	center = vec4( scalev(DIST_SCALE, planetPosition(PLUTO, cent)), 1.0 );
 	radius = PLUTO.radius * PLANET_SCALE;
 	if(colorCode){		// render FBO for planet detection
-		drawSphere(p, mv, invMV, center, radius, false, PLUTO.colorCode);
+		drawPlanet(theSphereProgram, p, mv, invMV, center, radius, false, PLUTO.colorCode);
 	}else{
-		drawSphere(p, mv, applyAxisTilt(invMV, PLUTO, date), center, radius, true);
+		drawPlanet(theSphereProgram, p, mv, applyAxisTilt(invMV, PLUTO, date), center, radius, true);
 		theOrbits.addOrbitPos(center);
 	}
 	

@@ -183,6 +183,94 @@ main()
 }
 </script>
 
+<script id="earth-fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
+#extension GL_EXT_frag_depth : enable
+
+varying vec3 fPosition;
+varying vec3 fCenter;
+varying vec3 L, E;
+
+uniform float radius;
+uniform float ka;
+uniform float kd;
+uniform float ks;
+uniform float shininess;
+uniform float colorCode;
+uniform mat4 invMV;
+uniform bool renderClouds;
+uniform sampler2D texture;
+uniform sampler2D daycolormap;
+uniform sampler2D nightcolormap;
+uniform sampler2D specularmap;
+uniform sampler2D bumpmap;
+
+void
+main()
+{
+	gl_FragDepthEXT = gl_FragCoord.z;
+	
+    vec3 dif = fPosition - fCenter;
+	float distance = length(dif);							// distance from the center of the circle
+    if (distance > radius) {
+		discard;
+        return;
+	}
+	
+	if(colorCode != 0.0){
+		gl_FragColor = vec4(colorCode, 0.0, 0.0, 1.0);
+		return;
+	}
+
+    float x = fPosition.x - fCenter.x;
+    float y = fPosition.y - fCenter.y;
+    float z = sqrt(radius*radius - x * x - y * y);
+	
+    vec3 norm = normalize(vec3(x, y, -z));					// normal vector of the circle
+	
+	/* texture parameters */
+    float pi = radians(180.0);
+	
+	vec3 texVec = ( invMV * vec4(fCenter + vec3(x, y, z), 1.0)).xyz;
+	vec3 tempCenter = (invMV * vec4(fCenter, 1.0)).xyz;
+	texVec = texVec - tempCenter; 
+	texVec = normalize(texVec);
+
+    float sCoord = 0.5 + (atan(texVec.x,texVec.z))/(2.0*pi);
+
+    float tCoord = 0.5 - asin(texVec.y)/(pi);
+
+    vec2 texCoord = vec2(sCoord, tCoord);
+	
+	vec4 fColor = texture2D( daycolormap,  texCoord); 
+	/*********************/
+
+	vec3 LL = normalize(L);
+	vec3 EE = normalize(E);
+    
+    vec3 H = normalize( LL + EE );
+    float ambient = ka;
+
+    float daynightcos = max( dot(LL, norm), 0.0 );
+    float diffuse = kd * daynightcos; 
+    
+    float specMapValue = (texture2D(specularmap, texCoord)).x;
+    if(specMapValue > 0.8) specMapValue = 1.0;
+    else if(specMapValue < 0.2) specMapValue = 0.0;
+    float specular = ks * pow( max(dot(norm, H), 0.0), shininess ) * specMapValue;
+    
+    if( dot(LL, norm) < 0.0 ) specular = 0.0;
+	
+    fColor = (1.0 - daynightcos)*texture2D(nightcolormap, texCoord) + daynightcos*texture2D(daycolormap, texCoord);
+
+    fColor = fColor * (ambient + diffuse) + vec4(1.0) * specular;
+    fColor.a = 1.0;
+    
+    gl_FragColor = fColor;
+	
+}
+</script>
 
 <!-- Skybox related vertex and fragment shaders -->
 <script id="skybox-vertex-shader" type="x-shader/x-vertex">
