@@ -143,17 +143,19 @@ main()
 	/* texture parameters */
     float pi = radians(180.0);
 	
+	// Convert fragment position to object coordinates
 	vec3 texVec = ( invMV * vec4(fCenter + vec3(x, y, z), 1.0)).xyz;
+	// Convert sphere center positionn to object coordinates
 	vec3 tempCenter = (invMV * vec4(fCenter, 1.0)).xyz;
+	// Vector from sphere surface position to sphere center
 	texVec = texVec - tempCenter; 
 	texVec = normalize(texVec);
 
+	// Calculate the s and t coordinates for texture mapping
     float sCoord = 0.5 + (atan(texVec.x,texVec.z))/(2.0*pi);
-
     float tCoord = 0.5 - asin(texVec.y)/(pi);
-
     vec2 texCoord = vec2(sCoord, tCoord);
-	
+
 	vec4 fColor = texture2D( texture,  texCoord); 
 	/*********************/
 
