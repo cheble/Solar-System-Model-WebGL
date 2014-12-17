@@ -75,6 +75,20 @@ var EARTH = {
 		N:-5.11260389,	NDelta:-0.24123856
 			};
 
+var EARTH_CLOUDS = {
+		name:"Earth_clouds",
+		radius:6521.0,
+		colorCode:103,
+		o:23.44,
+		r:-90.9851887443,		// 24.0/23.9345 * 360
+		a:1.00000018,	aDelta:-0.00000003,
+		e:0.01673163,	eDelta:-0.00003661,
+		I:-0.00054346,	IDelta:-0.01337178,
+		L:100.46691572,	LDelta:35999.37306329,
+		p:102.93005885,	pDelta:0.31795260,
+		N:-5.11260389,	NDelta:-0.24123856
+			};
+
 var MARS = {
 		name:"Mars",
 		info:"Mars (Planet)" +

@@ -602,6 +602,9 @@ function drawPlanets(p, mv, colorCode)
 	}else{
 		drawEarth(theEarthProgram, p, mv, applyAxisTilt(invMV, EARTH, date), center, radius, false);
 		theOrbits.addOrbitPos(center);
+
+		radius = EARTH_CLOUDS.radius * PLANET_SCALE;
+		drawEarth(theEarthProgram, p, mv, applyAxisTilt(invMV, EARTH_CLOUDS, date), center, radius, true);
 	}
 	
 	

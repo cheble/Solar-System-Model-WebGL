@@ -205,6 +205,7 @@ uniform sampler2D daycolormap;
 uniform sampler2D nightcolormap;
 uniform sampler2D specularmap;
 uniform sampler2D bumpmap;
+uniform sampler2D cloudmap;
 
 void
 main()
@@ -243,7 +244,7 @@ main()
 
     vec2 texCoord = vec2(sCoord, tCoord);
 	
-	vec4 fColor = texture2D( daycolormap,  texCoord); 
+	vec4 fColor = texture2D(daycolormap,  texCoord); 
 	/*********************/
 
 	vec3 LL = normalize(L);
@@ -252,16 +253,24 @@ main()
     vec3 H = normalize( LL + EE );
     float ambient = ka;
 
-    float daynightcos = max( dot(LL, norm), 0.0 );
+    float daynightcos = max( dot(LL, norm), 0.0 );  // 1.0 at the equator, 0.0 at the poles
     float diffuse = kd * daynightcos; 
     
     float specMapValue = (texture2D(specularmap, texCoord)).x;
+    //  with a better specularMap, these lines aren't necessary
     if(specMapValue > 0.8) specMapValue = 1.0;
     else if(specMapValue < 0.2) specMapValue = 0.0;
     float specular = ks * pow( max(dot(norm, H), 0.0), shininess ) * specMapValue;
     
     if( dot(LL, norm) < 0.0 ) specular = 0.0;
 	
+	if(renderClouds) {
+		gl_FragDepthEXT = gl_FragCoord.z - 0.0001;
+		// squared daynightcos for aesthetics
+		gl_FragColor = daynightcos*daynightcos * texture2D(cloudmap, texCoord); 
+		return;
+	}
+
     fColor = (1.0 - daynightcos)*texture2D(nightcolormap, texCoord) + daynightcos*texture2D(daycolormap, texCoord);
 
     fColor = fColor * (ambient + diffuse) + vec4(1.0) * specular;

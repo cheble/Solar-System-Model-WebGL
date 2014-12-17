@@ -12,10 +12,11 @@ var moonTexture;
 var earthNightTexture;
 var earthBumpMap;
 var earthSpecularMap;
+var earthCloudTexture;
 
 var earthTextures = [];
 var earthShaderTexNames = ["daycolormap", "nightcolormap",
-                      "bumpmap", "specularmap"];
+                      "bumpmap", "specularmap", "cloudmap"];
 
 function configurePlanetTexture( image, imageID) {
 	var dataType = gl.RGB;  // the standard for our textures
@@ -66,6 +67,11 @@ function configurePlanetTexture( image, imageID) {
         gl.bindTexture( gl.TEXTURE_2D, earthSpecularMap );
         earthTextures.push(earthSpecularMap);
         dataType = gl.LUMINANCE;
+    } else if (imageID == 15) {
+        earthCloudTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, earthCloudTexture);
+        earthTextures.push(earthCloudTexture);
+        dataType = gl.RGBA;
     } 
     else {
         return;
@@ -172,6 +178,11 @@ function loadPlanetTexture() {
     }
     image14.src = PLANETS_PATH + "earthspec1k.jpg";
     
+    var image15 = new Image();
+    image15.onload = function() {
+        configurePlanetTexture( image15, 15 );
+    }
+    image15.src = PLANETS_PATH + "earth-clouds.png";
 }
 
 function usePlanetTexture(theProgram, texture) {
