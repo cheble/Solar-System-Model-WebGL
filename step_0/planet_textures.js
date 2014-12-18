@@ -23,7 +23,7 @@ function configurePlanetTexture( image, imageID) {
     if(imageID == 1){
 		earthTexture = gl.createTexture();
 	    gl.bindTexture( gl.TEXTURE_2D, earthTexture );
-        earthTextures.push(earthTexture);
+        earthTextures[0] = earthTexture;//push(earthTexture);
 	} else if (imageID == 2){
 		jupiterTexture = gl.createTexture();
 	    gl.bindTexture( gl.TEXTURE_2D, jupiterTexture );
@@ -57,20 +57,20 @@ function configurePlanetTexture( image, imageID) {
 	} else if (imageID == 12){
         earthNightTexture = gl.createTexture();
         gl.bindTexture( gl.TEXTURE_2D, earthNightTexture );
-        earthTextures.push(earthNightTexture);
+        earthTextures[1] = earthNightTexture;//.push(earthNightTexture);
     } else if (imageID == 13){
         earthBumpMap = gl.createTexture();
         gl.bindTexture( gl.TEXTURE_2D, earthBumpMap );
-        earthTextures.push(earthBumpMap);
+        earthTextures[2] = earthBumpMap;//.push(earthBumpMap);
     } else if (imageID == 14){
         earthSpecularMap = gl.createTexture();
         gl.bindTexture( gl.TEXTURE_2D, earthSpecularMap );
-        earthTextures.push(earthSpecularMap);
+        earthTextures[3] = earthSpecularMap;//push(earthSpecularMap);
         dataType = gl.LUMINANCE;
     } else if (imageID == 15) {
         earthCloudTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, earthCloudTexture);
-        earthTextures.push(earthCloudTexture);
+        earthTextures[4] = earthCloudTexture;//.push(earthCloudTexture);
         dataType = gl.RGBA;
     } 
     else {
