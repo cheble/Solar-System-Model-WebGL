@@ -525,7 +525,7 @@ function render()
 {
 	// increment date
 	if(!theTime.isPaused()) {	
-		date += 0.10*theTime.getDateScale();
+		date += (1.0/60.0)*theTime.getDateScale();
 		if(guiCount >= 15){
 			dateToGUI();
 			guiCount = 0;
@@ -735,7 +735,7 @@ function setDate(Year, Month, Day){
 
 var theTime;
 var TimeOptions = function() {
-	this.speed = 1.0;
+	this.speed = 0.1;
 	this.pause = false;
 
 	this.getDateScale = function() {
