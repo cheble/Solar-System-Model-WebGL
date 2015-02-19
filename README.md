@@ -20,6 +20,6 @@ The user can explore the solar system model using the wasd keys to move the posi
 <br>
 This project won a "People's Choice Award" for the class, voted on by the students.<br>
 <br>
-A short video of the project in action at Hongfeng Yu's course webpage: (http://vis.unl.edu/~yu/course/csce470/award/index.html link)<br>
+A short video of the project in action at Hongfeng Yu's course webpage: http://vis.unl.edu/~yu/course/csce470/award/index.html link<br>
 <br>
-A demo of the project is located at: (http://cse.unl.edu/~cheble/CSCE-470-Group-Project/step_0/solar_system.html "Demo")
+A demo of the project is located at: http://cse.unl.edu/~cheble/CSCE-470-Group-Project/step_0/solar_system.html
