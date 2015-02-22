@@ -1,5 +1,5 @@
-# CSCE-470-Group-Project
-Solar System Model in WebGL
+# Solar-System-Model-WebGL
+Interactive model of our solar system in WebGL
 
 This is a project created for a course at the University of Nebraska-Lincoln.<br>
 <blockquote>
